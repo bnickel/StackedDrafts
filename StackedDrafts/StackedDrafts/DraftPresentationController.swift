@@ -8,11 +8,21 @@
 
 import UIKit
 
-public protocol PresentedDraftController {
+public protocol DraftViewControllerProtocol : NSObjectProtocol {
     var draggableView:UIView? { get }
+    var draftTitle:String? { get }
 }
 
 class DraftPresentationController : UIPresentationController {
+    
+    enum notifications : String {
+        case didPresentDraftViewController = "DraftPresentationController.notifications.didPresentDraftViewController"
+        case willDismissNonInteractiveDraftViewController = "DraftPresentationController.notifications.willDismissNonInteractiveDraftViewController"
+        
+        enum keys : String {
+            case viewController
+        }
+    }
     
     // Location
     
@@ -38,16 +48,21 @@ class DraftPresentationController : UIPresentationController {
     override func presentationTransitionWillBegin() {
         presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(containerView!, animation: { context in
             self.setScale(expanded: true)
-            }, completion: { context in
-                self.setScale(expanded: !context.isCancelled())
+        }, completion: { context in
+            self.setScale(expanded: !context.isCancelled())
         })
     }
     
     override func dismissalTransitionWillBegin() {
+        
+        if interactiveTransitioning == nil {
+            NSNotificationCenter.defaultCenter().postNotificationName(notifications.willDismissNonInteractiveDraftViewController.rawValue, object: self, userInfo: [notifications.keys.viewController.rawValue: presentedViewController])
+        }
+        
         presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(presentingViewController.view, animation: { context in
             self.setScale(expanded: false)
-            }, completion: { context in
-                self.setScale(expanded: context.isCancelled())
+        }, completion: { context in
+            self.setScale(expanded: context.isCancelled())
         })
     }
     
@@ -61,11 +76,13 @@ class DraftPresentationController : UIPresentationController {
     
     override func presentationTransitionDidEnd(completed: Bool) {
         guard completed else { return }
-        if let presentedViewController = presentedViewController as? PresentedDraftController {
+        if let presentedViewController = presentedViewController as? DraftViewControllerProtocol {
             presentedViewController.draggableView?.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panned(_:))))
         } else if let presentedViewController = presentedViewController as? UINavigationController {
             presentedViewController.navigationBar.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panned(_:))))
         }
+        
+        NSNotificationCenter.defaultCenter().postNotificationName(notifications.didPresentDraftViewController.rawValue, object: self, userInfo: [notifications.keys.viewController.rawValue: presentedViewController])
     }
     
     var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil

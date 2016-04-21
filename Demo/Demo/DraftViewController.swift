@@ -9,14 +9,15 @@
 import UIKit
 import StackedDrafts
 
-class DraftViewController: UIViewController, PresentedDraftController {
+class DraftViewController: UIViewController, DraftViewControllerProtocol {
     
     @IBOutlet var draggableView: UIView?
+    
+    let draftTitle: String? = "New Message"
     
     override func awakeFromNib() {
         super.awakeFromNib()
         transitioningDelegate = DraftTransitioningDelegate.sharedInstance
         modalPresentationStyle = .Custom
     }
-    
 }

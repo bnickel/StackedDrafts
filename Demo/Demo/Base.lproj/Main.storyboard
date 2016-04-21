@@ -24,16 +24,27 @@
                                     <segue destination="axL-Te-eJU" kind="presentation" id="Ka3-3P-7jC"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pOY-1e-Nbc" customClass="OpenDraftsIndicatorView" customModule="StackedDrafts">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <action selector="draftRequested" destination="BYZ-38-t0r" eventType="touchUpInside" id="HJZ-0S-cyp"/>
+                                </connections>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="pOY-1e-Nbc" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="DuU-CS-skf"/>
                             <constraint firstItem="HPB-nz-je3" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="gRv-et-zA5"/>
+                            <constraint firstAttribute="trailing" secondItem="pOY-1e-Nbc" secondAttribute="trailing" id="mBG-rl-BZq"/>
                             <constraint firstItem="HPB-nz-je3" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="rdJ-SG-44g"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="pOY-1e-Nbc" secondAttribute="bottom" id="tfW-6L-fy2"/>
                         </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="593" y="557"/>
         </scene>
         <!--Draft View Controller-->
         <scene sceneID="fD6-qx-tJt">

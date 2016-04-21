@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import StackedDrafts
 
 class PresentingViewController: UIViewController {
     @IBAction func done(segue: UIStoryboardSegue) { }
+    
+    @IBAction func draftRequested() {
+        OpenDraftsManager.sharedInstance.presentDraft(from: self, animated: true)
+    }
 }
 

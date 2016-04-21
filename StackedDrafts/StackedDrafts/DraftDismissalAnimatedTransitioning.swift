@@ -38,14 +38,14 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         
         UIView.animateWithDuration(duration, delay: 0, options: animationOptions, animations: {
             fromViewController.view.frame = finalFrame
-            }, completion: { _ in
-                
-                if transitionContext.transitionWasCancelled() {
-                    transitionContext.completeTransition(false)
-                } else {
-                    fromViewController.view.removeFromSuperview()
-                    transitionContext.completeTransition(true)
-                }
+        }, completion: { _ in
+            
+            if transitionContext.transitionWasCancelled() {
+                transitionContext.completeTransition(false)
+            } else {
+                fromViewController.view.removeFromSuperview()
+                transitionContext.completeTransition(true)
+            }
         })
     }
 
