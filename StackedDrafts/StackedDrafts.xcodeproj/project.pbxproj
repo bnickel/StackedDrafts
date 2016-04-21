@@ -8,12 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		EB049EDF1CC96CE4007F836E /* StackedDrafts.h in Headers */ = {isa = PBXBuildFile; fileRef = EB049EDE1CC96CE4007F836E /* StackedDrafts.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EB049F071CC970E5007F836E /* DraftPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F061CC970E5007F836E /* DraftPresentationController.swift */; };
+		EB049F091CC97130007F836E /* DraftTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F081CC97130007F836E /* DraftTransitioningDelegate.swift */; };
+		EB049F0F1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F0E1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		EB049EDB1CC96CE4007F836E /* StackedDrafts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = StackedDrafts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB049EDE1CC96CE4007F836E /* StackedDrafts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StackedDrafts.h; sourceTree = "<group>"; };
 		EB049EE01CC96CE4007F836E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EB049F061CC970E5007F836E /* DraftPresentationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraftPresentationController.swift; sourceTree = "<group>"; };
+		EB049F081CC97130007F836E /* DraftTransitioningDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraftTransitioningDelegate.swift; sourceTree = "<group>"; };
+		EB049F0E1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraftDismissalAnimatedTransitioning.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,6 +54,9 @@
 			children = (
 				EB049EDE1CC96CE4007F836E /* StackedDrafts.h */,
 				EB049EE01CC96CE4007F836E /* Info.plist */,
+				EB049F061CC970E5007F836E /* DraftPresentationController.swift */,
+				EB049F081CC97130007F836E /* DraftTransitioningDelegate.swift */,
+				EB049F0E1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift */,
 			);
 			path = StackedDrafts;
 			sourceTree = "<group>";
@@ -130,6 +139,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB049F091CC97130007F836E /* DraftTransitioningDelegate.swift in Sources */,
+				EB049F0F1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift in Sources */,
+				EB049F071CC970E5007F836E /* DraftPresentationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +242,7 @@
 		EB049EE41CC96CE4007F836E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -240,12 +253,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.stackexchange.StackedDrafts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		EB049EE51CC96CE4007F836E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -278,6 +293,7 @@
 				EB049EE51CC96CE4007F836E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
