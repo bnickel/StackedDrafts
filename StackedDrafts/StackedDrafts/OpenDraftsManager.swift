@@ -43,9 +43,16 @@ public class OpenDraftsManager {
     }
     
     public func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
-        if let viewController = self.openDraftingViewControllers.last as? UIViewController {
+        if self.openDraftingViewControllers.count > 1 {
+            let viewController = OpenDraftSelectorViewController(source: presentingViewController)
+            presentingViewController.presentViewController(viewController, animated: animated, completion: completion)
+        } else if let viewController = self.openDraftingViewControllers.last as? UIViewController {
             presentingViewController.presentViewController(viewController, animated: animated, completion: completion)
             viewController.draftPresentationController?.hasBeenPresented = true
         }
+    }
+    
+    public func add(viewController:DraftViewControllerProtocol) {
+        openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController }) + [viewController]
     }
 }

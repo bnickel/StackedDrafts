@@ -49,7 +49,7 @@
         <!--Draft View Controller-->
         <scene sceneID="fD6-qx-tJt">
             <objects>
-                <viewController id="axL-Te-eJU" customClass="DraftViewController" customModule="Demo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="presented" id="axL-Te-eJU" customClass="DraftViewController" customModule="Demo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YqW-Kc-8xg"/>
                         <viewControllerLayoutGuide type="bottom" id="c8C-FC-RZs"/>

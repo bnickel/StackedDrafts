@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import StackedDrafts
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -34,7 +35,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        let viewControllersToInstantiate = 10
+        if let storyboard = window?.rootViewController?.storyboard {
+            
+            for _ in 0 ..< viewControllersToInstantiate {
+                if let presented = storyboard.instantiateViewControllerWithIdentifier("presented") as? DraftViewControllerProtocol {
+                    OpenDraftsManager.sharedInstance.add(presented)
+                }
+            }
+            
+        }
     }
 
     func applicationWillTerminate(application: UIApplication) {

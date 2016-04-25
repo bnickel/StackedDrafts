@@ -18,6 +18,9 @@
 		EB049F1C1CCE8203007F836E /* OpenDraftHeaderOverlayView.contentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB049F1B1CCE8203007F836E /* OpenDraftHeaderOverlayView.contentView.xib */; };
 		EB049F1E1CCE8291007F836E /* OpenDraftHeaderOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F1D1CCE8291007F836E /* OpenDraftHeaderOverlayView.swift */; };
 		EB049F201CCE8F0D007F836E /* SingleDraftPresentationAnimatedTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F1F1CCE8F0D007F836E /* SingleDraftPresentationAnimatedTransitioning.swift */; };
+		EB049F231CCEA049007F836E /* OpenDraftSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F211CCEA049007F836E /* OpenDraftSelectorViewController.swift */; };
+		EB049F2A1CCEB86D007F836E /* OpenDraftCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F281CCEB86D007F836E /* OpenDraftCollectionViewCell.swift */; };
+		EB049F2B1CCEB86D007F836E /* OpenDraftCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB049F291CCEB86D007F836E /* OpenDraftCollectionViewCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +37,9 @@
 		EB049F1B1CCE8203007F836E /* OpenDraftHeaderOverlayView.contentView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OpenDraftHeaderOverlayView.contentView.xib; sourceTree = "<group>"; };
 		EB049F1D1CCE8291007F836E /* OpenDraftHeaderOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenDraftHeaderOverlayView.swift; sourceTree = "<group>"; };
 		EB049F1F1CCE8F0D007F836E /* SingleDraftPresentationAnimatedTransitioning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SingleDraftPresentationAnimatedTransitioning.swift; sourceTree = "<group>"; };
+		EB049F211CCEA049007F836E /* OpenDraftSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenDraftSelectorViewController.swift; sourceTree = "<group>"; };
+		EB049F281CCEB86D007F836E /* OpenDraftCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenDraftCollectionViewCell.swift; sourceTree = "<group>"; };
+		EB049F291CCEB86D007F836E /* OpenDraftCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OpenDraftCollectionViewCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,15 +74,10 @@
 			children = (
 				EB049EDE1CC96CE4007F836E /* StackedDrafts.h */,
 				EB049EE01CC96CE4007F836E /* Info.plist */,
-				EB049F081CC97130007F836E /* DraftTransitioningDelegate.swift */,
-				EB049F061CC970E5007F836E /* DraftPresentationController.swift */,
-				EB049F1F1CCE8F0D007F836E /* SingleDraftPresentationAnimatedTransitioning.swift */,
-				EB049F0E1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift */,
-				EB049F121CC97809007F836E /* OpenDraftsIndicatorView.swift */,
-				EB049F101CC977B8007F836E /* OpenDraftsIndicatorView.contentView.xib */,
-				EB049F1B1CCE8203007F836E /* OpenDraftHeaderOverlayView.contentView.xib */,
-				EB049F1D1CCE8291007F836E /* OpenDraftHeaderOverlayView.swift */,
 				EB049F161CC97EB3007F836E /* OpenDraftsManager.swift */,
+				EB049F251CCEA0DB007F836E /* Draft Presentation */,
+				EB049F261CCEA10E007F836E /* Indicator Views */,
+				EB049F271CCEA121007F836E /* Multiple Draft Selection */,
 				EB049F1A1CC98531007F836E /* Convenience */,
 			);
 			path = StackedDrafts;
@@ -88,6 +89,38 @@
 				EB049F141CC97BAB007F836E /* NSLayoutConstraint.swift */,
 			);
 			name = Convenience;
+			sourceTree = "<group>";
+		};
+		EB049F251CCEA0DB007F836E /* Draft Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				EB049F081CC97130007F836E /* DraftTransitioningDelegate.swift */,
+				EB049F061CC970E5007F836E /* DraftPresentationController.swift */,
+				EB049F1F1CCE8F0D007F836E /* SingleDraftPresentationAnimatedTransitioning.swift */,
+				EB049F0E1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift */,
+			);
+			name = "Draft Presentation";
+			sourceTree = "<group>";
+		};
+		EB049F261CCEA10E007F836E /* Indicator Views */ = {
+			isa = PBXGroup;
+			children = (
+				EB049F121CC97809007F836E /* OpenDraftsIndicatorView.swift */,
+				EB049F101CC977B8007F836E /* OpenDraftsIndicatorView.contentView.xib */,
+				EB049F1D1CCE8291007F836E /* OpenDraftHeaderOverlayView.swift */,
+				EB049F1B1CCE8203007F836E /* OpenDraftHeaderOverlayView.contentView.xib */,
+			);
+			name = "Indicator Views";
+			sourceTree = "<group>";
+		};
+		EB049F271CCEA121007F836E /* Multiple Draft Selection */ = {
+			isa = PBXGroup;
+			children = (
+				EB049F211CCEA049007F836E /* OpenDraftSelectorViewController.swift */,
+				EB049F281CCEB86D007F836E /* OpenDraftCollectionViewCell.swift */,
+				EB049F291CCEB86D007F836E /* OpenDraftCollectionViewCell.xib */,
+			);
+			name = "Multiple Draft Selection";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,6 +191,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB049F2B1CCEB86D007F836E /* OpenDraftCollectionViewCell.xib in Resources */,
 				EB049F1C1CCE8203007F836E /* OpenDraftHeaderOverlayView.contentView.xib in Resources */,
 				EB049F111CC977B8007F836E /* OpenDraftsIndicatorView.contentView.xib in Resources */,
 			);
@@ -170,6 +204,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB049F2A1CCEB86D007F836E /* OpenDraftCollectionViewCell.swift in Sources */,
 				EB049F091CC97130007F836E /* DraftTransitioningDelegate.swift in Sources */,
 				EB049F0F1CC97235007F836E /* DraftDismissalAnimatedTransitioning.swift in Sources */,
 				EB049F131CC97809007F836E /* OpenDraftsIndicatorView.swift in Sources */,
@@ -177,6 +212,7 @@
 				EB049F171CC97EB3007F836E /* OpenDraftsManager.swift in Sources */,
 				EB049F071CC970E5007F836E /* DraftPresentationController.swift in Sources */,
 				EB049F201CCE8F0D007F836E /* SingleDraftPresentationAnimatedTransitioning.swift in Sources */,
+				EB049F231CCEA049007F836E /* OpenDraftSelectorViewController.swift in Sources */,
 				EB049F151CC97BAB007F836E /* NSLayoutConstraint.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

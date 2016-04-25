@@ -17,7 +17,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3f6-lQ-7ei">
-                    <rect key="frame" x="0.0" y="1" width="760" height="254"/>
+                    <rect key="frame" x="0.0" y="1" width="760" height="253"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New Question on Stack Overflow" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F9R-VG-3Qg">
                             <rect key="frame" x="256" y="117" width="249" height="20"/>
@@ -44,7 +44,7 @@
                 <accessibilityTraits key="traits" notEnabled="YES"/>
             </accessibility>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="3f6-lQ-7ei" secondAttribute="bottom" id="4fI-DZ-rU5"/>
+                <constraint firstAttribute="bottom" secondItem="3f6-lQ-7ei" secondAttribute="bottom" constant="1" id="4fI-DZ-rU5"/>
                 <constraint firstItem="3f6-lQ-7ei" firstAttribute="top" secondItem="PWO-6M-CI8" secondAttribute="top" constant="1" id="MuG-nm-ENb"/>
                 <constraint firstAttribute="trailing" secondItem="3f6-lQ-7ei" secondAttribute="trailing" id="ZMC-Lx-DYd"/>
                 <constraint firstItem="3f6-lQ-7ei" firstAttribute="leading" secondItem="PWO-6M-CI8" secondAttribute="leading" id="ibn-mZ-cUh"/>
