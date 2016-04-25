@@ -84,7 +84,7 @@ public class OpenDraftsIndicatorView: UIControl {
         return CGSize(width: 100, height: intrinsicHeight)
     }
     
-    class func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat {
+    class func visibleHeaderHeight(numberOfOpenDrafts numberOfOpenDrafts: Int) -> CGFloat {
         return 43 - CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
     }
 }

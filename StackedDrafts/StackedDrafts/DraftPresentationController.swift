@@ -24,7 +24,15 @@ class DraftPresentationController : UIPresentationController {
         }
     }
     
-    // Location
+    var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil
+    lazy var interactiveDismissalGestureRecognizer:UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
+    private var lastInteractionTimestamp:NSTimeInterval = 0
+    
+    let wrappingView = UIView()
+    
+    override func presentedView() -> UIView? {
+        return wrappingView
+    }
     
     override func frameOfPresentedViewInContainerView() -> CGRect {
         let frame = super.frameOfPresentedViewInContainerView()
@@ -32,9 +40,31 @@ class DraftPresentationController : UIPresentationController {
         return UIEdgeInsetsInsetRect(frame, insets)
     }
     
-    // Parent scaling
+    override func presentationTransitionWillBegin() {
+        configureViews()
+        addPresentationScalingAnimation()
+    }
     
-    private func setScale(expanded expanded: Bool) {
+    override func dismissalTransitionWillBegin() {
+        notifyThatDismissalWillBeginIfNonInteractive()
+        addDismissalScalingAnimation()
+    }
+    
+    override func presentationTransitionDidEnd(completed: Bool) {
+        attachInteractiveDismissalGestureRecognizer()
+        notifyThatPresentationDidEndIfCompleted(completed)
+    }
+    
+    override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        fixPresentingViewControllerBounds()
+    }
+}
+
+// MARK: - Scaling
+private extension DraftPresentationController {
+    
+    func setScale(expanded expanded: Bool) {
         
         if expanded {
             let fromMeasurement = presentingViewController.view.bounds.width
@@ -45,48 +75,58 @@ class DraftPresentationController : UIPresentationController {
         }
     }
     
-    override func presentationTransitionWillBegin() {
+    func addPresentationScalingAnimation() {
         presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(containerView!, animation: { context in
             self.setScale(expanded: true)
-        }, completion: { context in
-            self.setScale(expanded: !context.isCancelled())
+            }, completion: { context in
+                self.setScale(expanded: !context.isCancelled())
         })
     }
     
-    override func dismissalTransitionWillBegin() {
-        
-        if interactiveTransitioning == nil {
-            NSNotificationCenter.defaultCenter().postNotificationName(notifications.willDismissNonInteractiveDraftViewController.rawValue, object: self, userInfo: [notifications.keys.viewController.rawValue: presentedViewController])
-        }
-        
+    func addDismissalScalingAnimation() {
         presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(presentingViewController.view, animation: { context in
             self.setScale(expanded: false)
-        }, completion: { context in
-            self.setScale(expanded: context.isCancelled())
+            }, completion: { context in
+                self.setScale(expanded: context.isCancelled())
         })
     }
     
-    override func containerViewWillLayoutSubviews() {
-        super.containerViewWillLayoutSubviews()
+    func fixPresentingViewControllerBounds() {
         guard let bounds = containerView?.bounds else { return }
         presentingViewController.view.bounds = bounds
     }
+}
+
+// MARK: - Notifications
+private extension DraftPresentationController {
     
-    // Interactive dismissal
+    func notifyThatDismissalWillBeginIfNonInteractive() {
+        guard interactiveTransitioning == nil else { return }
+        postNotification(notifications.willDismissNonInteractiveDraftViewController)
+    }
     
-    override func presentationTransitionDidEnd(completed: Bool) {
+    func notifyThatPresentationDidEndIfCompleted(completed: Bool) {
         guard completed else { return }
+        postNotification(notifications.didPresentDraftViewController)
+    }
+    
+    func postNotification(notification: notifications) {
+        NSNotificationCenter.defaultCenter().postNotificationName(notification.rawValue, object: self, userInfo: [notifications.keys.viewController.rawValue: presentedViewController])
+    }
+}
+
+// MARK: - Interactivity
+extension DraftPresentationController {
+    
+    private func attachInteractiveDismissalGestureRecognizer() {
+        guard interactiveDismissalGestureRecognizer.view == nil else { return }
+        
         if let presentedViewController = presentedViewController as? DraftViewControllerProtocol {
-            presentedViewController.draggableView?.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panned(_:))))
+            presentedViewController.draggableView?.addGestureRecognizer(interactiveDismissalGestureRecognizer)
         } else if let presentedViewController = presentedViewController as? UINavigationController {
             presentedViewController.navigationBar.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panned(_:))))
         }
-        
-        NSNotificationCenter.defaultCenter().postNotificationName(notifications.didPresentDraftViewController.rawValue, object: self, userInfo: [notifications.keys.viewController.rawValue: presentedViewController])
     }
-    
-    var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil
-    private var lastInteractionTimestamp:NSTimeInterval = 0
     
     @objc private func panned(sender : UIPanGestureRecognizer) {
         
@@ -99,7 +139,7 @@ class DraftPresentationController : UIPresentationController {
             presentingViewController.dismissViewControllerAnimated(true, completion: nil)
         case .Changed:
             lastInteractionTimestamp = now
-            interactiveTransitioning?.updateInteractiveTransition(sender.translationInView(containerView).y / presentedViewController.view.bounds.height)
+            interactiveTransitioning?.updateInteractiveTransition(min(sender.translationInView(containerView).y / (presentedViewController.view.bounds.height - dismissalInset), 1))
         case .Cancelled:
             interactiveTransitioning?.cancelInteractiveTransition()
             interactiveTransitioning = nil
@@ -114,5 +154,21 @@ class DraftPresentationController : UIPresentationController {
         default:
             break
         }
+    }
+    
+    var dismissalInset:CGFloat {
+        guard interactiveTransitioning != nil && presentedViewController is DraftViewControllerProtocol else { return 0 }
+        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
+    }
+}
+
+// MARK: - Views
+
+private extension DraftPresentationController {
+    
+    func configureViews() {
+        wrappingView.frame = presentedViewController.view.frame
+        wrappingView.addSubview(presentedViewController.view)
+        presentedViewController.view.frame = wrappingView.bounds
     }
 }

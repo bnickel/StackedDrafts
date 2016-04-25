@@ -27,26 +27,28 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         let animationOptions:UIViewAnimationOptions = interactiveTransitioning != nil ? .CurveLinear : .CurveEaseInOut
         
         let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
+        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
         
-        let initialFrame = transitionContext.initialFrameForViewController(fromViewController)
+        let initialFrameRelativeToSuperview = transitionContext.initialFrameForViewController(fromViewController)
+        let initialFrame = fromViewController.view.superview!.convertRect(initialFrameRelativeToSuperview, toView: fromView.superview)
+        
+        let finalInset = (fromViewController.presentationController as? DraftPresentationController)?.dismissalInset ?? 0
+        
         var finalFrame = initialFrame
+        finalFrame.origin.y = initialFrame.maxY - finalInset
         
-        finalFrame.origin.y = initialFrame.maxY
-        
-        fromViewController.view.frame = initialFrame
-        transitionContext.containerView()?.addSubview(fromViewController.view)
+        fromView.frame = initialFrame
         
         UIView.animateWithDuration(duration, delay: 0, options: animationOptions, animations: {
-            fromViewController.view.frame = finalFrame
+            fromView.frame = finalFrame
         }, completion: { _ in
             
             if transitionContext.transitionWasCancelled() {
                 transitionContext.completeTransition(false)
             } else {
-                fromViewController.view.removeFromSuperview()
+                fromView.removeFromSuperview()
                 transitionContext.completeTransition(true)
             }
         })
     }
-
 }
