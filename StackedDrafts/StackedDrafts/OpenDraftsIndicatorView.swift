@@ -85,6 +85,6 @@ public class OpenDraftsIndicatorView: UIControl {
     }
     
     class func visibleHeaderHeight(numberOfOpenDrafts numberOfOpenDrafts: Int) -> CGFloat {
-        return 43 - CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
+        return 44 - CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
     }
 }

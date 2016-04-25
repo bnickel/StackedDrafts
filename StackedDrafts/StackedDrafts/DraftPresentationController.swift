@@ -25,10 +25,12 @@ class DraftPresentationController : UIPresentationController {
     }
     
     var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil
-    lazy var interactiveDismissalGestureRecognizer:UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
+    private lazy var interactiveDismissalGestureRecognizer:UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
     private var lastInteractionTimestamp:NSTimeInterval = 0
     
-    let wrappingView = UIView()
+    private let wrappingView = UIView()
+    private lazy var headerOverlayView = OpenDraftHeaderOverlayView()
+    var hasBeenPresented = false
     
     override func presentedView() -> UIView? {
         return wrappingView
@@ -43,21 +45,30 @@ class DraftPresentationController : UIPresentationController {
     override func presentationTransitionWillBegin() {
         configureViews()
         addPresentationScalingAnimation()
+        addPresentationOverlayAnimations()
     }
     
     override func dismissalTransitionWillBegin() {
         notifyThatDismissalWillBeginIfNonInteractive()
         addDismissalScalingAnimation()
+        addDismissalOverlayAnimations()
     }
     
     override func presentationTransitionDidEnd(completed: Bool) {
         attachInteractiveDismissalGestureRecognizer()
         notifyThatPresentationDidEndIfCompleted(completed)
+        if completed { hasBeenPresented = true }
     }
     
     override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         fixPresentingViewControllerBounds()
+    }
+}
+
+extension UIViewController {
+    var draftPresentationController:DraftPresentationController? {
+        return presentationController as? DraftPresentationController
     }
 }
 
@@ -156,6 +167,11 @@ extension DraftPresentationController {
         }
     }
     
+    var presentationInset:CGFloat {
+        guard hasBeenPresented && presentedViewController is DraftViewControllerProtocol else { return 0 }
+        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
+    }
+    
     var dismissalInset:CGFloat {
         guard interactiveTransitioning != nil && presentedViewController is DraftViewControllerProtocol else { return 0 }
         return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
@@ -168,7 +184,45 @@ private extension DraftPresentationController {
     
     func configureViews() {
         wrappingView.frame = presentedViewController.view.frame
+        wrappingView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         wrappingView.addSubview(presentedViewController.view)
         presentedViewController.view.frame = wrappingView.bounds
+    }
+    
+    func addHeaderOverlayIfNeeded() {
+        guard let draftViewController = presentedViewController as? DraftViewControllerProtocol where hasBeenPresented else { return }
+        var frame = wrappingView.bounds
+        frame.size.height = 44
+        
+        headerOverlayView.labelText = draftViewController.draftTitle
+        headerOverlayView.frame = frame
+        headerOverlayView.translatesAutoresizingMaskIntoConstraints = true
+        headerOverlayView.autoresizingMask = [.FlexibleWidth, .FlexibleBottomMargin]
+        wrappingView.addSubview(headerOverlayView)
+    }
+    
+    func addPresentationOverlayAnimations() {
+        addHeaderOverlayIfNeeded()
+        
+        headerOverlayView.alpha = 1
+        presentingViewController.transitionCoordinator()?.animateAlongsideTransition({ context in
+            self.headerOverlayView.alpha = 0
+        }, completion: { context in
+            self.headerOverlayView.removeFromSuperview()
+        })
+    }
+    
+    func addDismissalOverlayAnimations() {
+        
+        if interactiveTransitioning != nil {
+            addHeaderOverlayIfNeeded()
+        }
+        
+        headerOverlayView.alpha = 0
+        presentingViewController.transitionCoordinator()?.animateAlongsideTransition({ context in
+            self.headerOverlayView.alpha = 1
+        }, completion: { context in
+            self.headerOverlayView.removeFromSuperview()
+        })
     }
 }

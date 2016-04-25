@@ -45,6 +45,7 @@ public class OpenDraftsManager {
     public func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
         if let viewController = self.openDraftingViewControllers.last as? UIViewController {
             presentingViewController.presentViewController(viewController, animated: animated, completion: completion)
+            viewController.draftPresentationController?.hasBeenPresented = true
         }
     }
 }

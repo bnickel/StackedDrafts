@@ -32,7 +32,7 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         let initialFrameRelativeToSuperview = transitionContext.initialFrameForViewController(fromViewController)
         let initialFrame = fromViewController.view.superview!.convertRect(initialFrameRelativeToSuperview, toView: fromView.superview)
         
-        let finalInset = (fromViewController.presentationController as? DraftPresentationController)?.dismissalInset ?? 0
+        let finalInset = fromViewController.draftPresentationController?.dismissalInset ?? 0
         
         var finalFrame = initialFrame
         finalFrame.origin.y = initialFrame.maxY - finalInset

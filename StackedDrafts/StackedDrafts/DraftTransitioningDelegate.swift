@@ -16,9 +16,12 @@ public class DraftTransitioningDelegate : NSObject, UIViewControllerTransitionin
         return DraftPresentationController(presentedViewController: presented, presentingViewController: presenting)
     }
     
+    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return SingleDraftPresentationAnimatedTransitioning()
+    }
+    
     public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let interactiveTransitioning = (dismissed.presentationController as? DraftPresentationController)?.interactiveTransitioning
-        return DraftDismissalAnimatedTransitioning(interactiveTransitioning: interactiveTransitioning)
+        return DraftDismissalAnimatedTransitioning(interactiveTransitioning: dismissed.draftPresentationController?.interactiveTransitioning)
     }
     
     public func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
