@@ -13,7 +13,7 @@ public class OpenDraftsIndicatorView: UIControl {
     
     @IBOutlet private var contentView: UIView!
     @IBOutlet private var mostRecentDraftTopConstraint: NSLayoutConstraint!
-    @IBOutlet private var mostRecentDraftLabel: UILabel!
+    @IBOutlet private var mostRecentDraftView: OpenDraftHeaderOverlayView!
     @IBOutlet private var secondDraftView: UIView!
     @IBOutlet private var thirdDraftView: UIView!
     
@@ -64,7 +64,7 @@ public class OpenDraftsIndicatorView: UIControl {
     
     private func setMostRecentDraftTitle(mostRecentDraftTitle:String?, numberOfOpenDrafts:Int) {
         accessibilityLabel = mostRecentDraftTitle
-        mostRecentDraftLabel.text = mostRecentDraftTitle
+        mostRecentDraftView.labelText = mostRecentDraftTitle
         secondDraftView.hidden = numberOfOpenDrafts < 2
         thirdDraftView.hidden = numberOfOpenDrafts < 3
         mostRecentDraftTopConstraint.constant = CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))

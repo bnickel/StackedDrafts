@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OpenDraftHeaderOverlayView" customModule="StackedDrafts" customModuleProvider="target">
+            <connections>
+                <outlet property="contentView" destination="PWO-6M-CI8" id="GWC-vs-LtT"/>
+                <outlet property="label" destination="F9R-VG-3Qg" id="2If-2y-3Nx"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="PWO-6M-CI8">
+            <rect key="frame" x="0.0" y="0.0" width="760" height="255"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3f6-lQ-7ei">
+                    <rect key="frame" x="0.0" y="1" width="760" height="254"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New Question on Stack Overflow" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F9R-VG-3Qg">
+                            <rect key="frame" x="256" y="117" width="249" height="20"/>
+                            <accessibility key="accessibilityConfiguration">
+                                <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
+                            </accessibility>
+                            <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <accessibility key="accessibilityConfiguration">
+                        <accessibilityTraits key="traits" notEnabled="YES"/>
+                    </accessibility>
+                    <constraints>
+                        <constraint firstItem="F9R-VG-3Qg" firstAttribute="centerX" secondItem="3f6-lQ-7ei" secondAttribute="centerX" id="Fu5-lo-bhW"/>
+                        <constraint firstItem="F9R-VG-3Qg" firstAttribute="centerY" secondItem="3f6-lQ-7ei" secondAttribute="centerY" id="qcG-DN-WY0"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+            <accessibility key="accessibilityConfiguration">
+                <accessibilityTraits key="traits" notEnabled="YES"/>
+            </accessibility>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="3f6-lQ-7ei" secondAttribute="bottom" id="4fI-DZ-rU5"/>
+                <constraint firstItem="3f6-lQ-7ei" firstAttribute="top" secondItem="PWO-6M-CI8" secondAttribute="top" constant="1" id="MuG-nm-ENb"/>
+                <constraint firstAttribute="trailing" secondItem="3f6-lQ-7ei" secondAttribute="trailing" id="ZMC-Lx-DYd"/>
+                <constraint firstItem="3f6-lQ-7ei" firstAttribute="leading" secondItem="PWO-6M-CI8" secondAttribute="leading" id="ibn-mZ-cUh"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="711" y="-102.5"/>
+        </view>
+    </objects>
+</document>

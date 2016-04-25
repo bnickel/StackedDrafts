@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10116"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OpenDraftsIndicatorView" customModule="StackedDrafts" customModuleProvider="target">
             <connections>
                 <outlet property="contentView" destination="iN0-l3-epB" id="gqc-OG-w1q"/>
-                <outlet property="mostRecentDraftLabel" destination="F7y-IB-9Ln" id="MZu-P6-Y8n"/>
                 <outlet property="mostRecentDraftTopConstraint" destination="onW-NG-USh" id="ejY-Sh-Uar"/>
+                <outlet property="mostRecentDraftView" destination="f0f-Nf-WCu" id="Oj1-dN-692"/>
                 <outlet property="secondDraftView" destination="pf7-Ud-6ED" id="ULd-ij-vCM"/>
                 <outlet property="thirdDraftView" destination="POK-xI-4a4" id="SNL-Is-CU7"/>
             </connections>
@@ -26,42 +26,11 @@
                         <constraint firstAttribute="height" constant="1" id="RWM-fM-gos"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f0f-Nf-WCu">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f0f-Nf-WCu" customClass="OpenDraftHeaderOverlayView" customModule="StackedDrafts" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="14" width="689" height="215"/>
-                    <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wjZ-8r-tjK">
-                            <rect key="frame" x="0.0" y="1" width="689" height="214"/>
-                            <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="New Question on Stack Overflow" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F7y-IB-9Ln">
-                                    <rect key="frame" x="220" y="97" width="249" height="20"/>
-                                    <accessibility key="accessibilityConfiguration">
-                                        <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
-                                    </accessibility>
-                                    <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
-                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                            </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <accessibility key="accessibilityConfiguration">
-                                <accessibilityTraits key="traits" notEnabled="YES"/>
-                            </accessibility>
-                            <constraints>
-                                <constraint firstItem="F7y-IB-9Ln" firstAttribute="centerY" secondItem="wjZ-8r-tjK" secondAttribute="centerY" id="6TB-9S-tbD"/>
-                                <constraint firstItem="F7y-IB-9Ln" firstAttribute="centerX" secondItem="wjZ-8r-tjK" secondAttribute="centerX" id="FGi-oH-GkK"/>
-                            </constraints>
-                        </view>
-                    </subviews>
-                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     <accessibility key="accessibilityConfiguration">
                         <accessibilityTraits key="traits" notEnabled="YES"/>
                     </accessibility>
-                    <constraints>
-                        <constraint firstItem="wjZ-8r-tjK" firstAttribute="leading" secondItem="f0f-Nf-WCu" secondAttribute="leading" id="7h8-Fp-92O"/>
-                        <constraint firstItem="wjZ-8r-tjK" firstAttribute="top" secondItem="f0f-Nf-WCu" secondAttribute="top" constant="1" id="8Pe-DJ-sm7"/>
-                        <constraint firstAttribute="bottom" secondItem="wjZ-8r-tjK" secondAttribute="bottom" id="Mah-YN-mR2"/>
-                        <constraint firstAttribute="trailing" secondItem="wjZ-8r-tjK" secondAttribute="trailing" id="frg-JR-wMK"/>
-                    </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="POK-xI-4a4">
                     <rect key="frame" x="20" y="6" width="649" height="4"/>
