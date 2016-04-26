@@ -38,8 +38,7 @@ class DraftPresentationController : UIPresentationController {
     
     override func frameOfPresentedViewInContainerView() -> CGRect {
         let frame = super.frameOfPresentedViewInContainerView()
-        let insets = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
-        return UIEdgeInsetsInsetRect(frame, insets)
+        return UIEdgeInsetsInsetRect(frame, DraftPresentationController.presentedInsets)
     }
     
     override func presentationTransitionWillBegin() {
@@ -64,6 +63,13 @@ class DraftPresentationController : UIPresentationController {
         super.containerViewWillLayoutSubviews()
         fixPresentingViewControllerBounds()
     }
+    
+    static let presentedInsets = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
+    
+    class func presenterTransform(width width:CGFloat) -> CGAffineTransform {
+        let scale = (width - 30) / width
+        return CGAffineTransformMakeScale(scale, scale)
+    }
 }
 
 extension UIViewController {
@@ -76,11 +82,8 @@ extension UIViewController {
 private extension DraftPresentationController {
     
     func setScale(expanded expanded: Bool) {
-        
         if expanded {
-            let fromMeasurement = presentingViewController.view.bounds.width
-            let fromScale = (fromMeasurement - 30) / fromMeasurement
-            presentingViewController.view.transform = CGAffineTransformMakeScale(fromScale, fromScale)
+            presentingViewController.view.transform = DraftPresentationController.presenterTransform(width: presentingViewController.view.bounds.width)
         } else {
             presentingViewController.view.transform = CGAffineTransformIdentity
         }

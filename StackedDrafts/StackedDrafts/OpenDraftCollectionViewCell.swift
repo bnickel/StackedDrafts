@@ -11,6 +11,7 @@ import UIKit
 class OpenDraftCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet private var previewContainerView: UIView!
+    @IBOutlet private var closeButton: UIButton!
     @IBOutlet private var headerView: OpenDraftHeaderOverlayView!
     
     override func awakeFromNib() {
@@ -29,5 +30,30 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
     
     class func cell(at indexPath:NSIndexPath, collectionView: UICollectionView) -> OpenDraftCollectionViewCell {
         return collectionView.dequeueReusableCellWithReuseIdentifier(OpenDraftCollectionViewCell.reuseIdentifier, forIndexPath: indexPath) as! OpenDraftCollectionViewCell
+    }
+    
+    var snapshotView:UIView? {
+        didSet {
+            previewContainerView.subviews.last?.removeFromSuperview()
+            if let snapshotView = snapshotView {
+                snapshotView.translatesAutoresizingMaskIntoConstraints = true
+                snapshotView.autoresizingMask = [.FlexibleWidth, .FlexibleWidth]
+                snapshotView.frame = previewContainerView.bounds
+                previewContainerView.addSubview(snapshotView)
+            }
+        }
+    }
+    
+    var showHeader:Bool = true {
+        didSet {
+            headerView.hidden = !showHeader
+            closeButton.hidden = !showHeader
+        }
+    }
+    
+    var draftTitle:String? {
+        didSet {
+            headerView.labelText = draftTitle
+        }
     }
 }

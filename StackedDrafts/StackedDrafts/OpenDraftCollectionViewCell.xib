@@ -16,7 +16,7 @@
                     <view contentMode="scaleToFill" id="9EB-1b-bFu">
                         <rect key="frame" x="0.0" y="0.0" width="624" height="388"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <view contentMode="scaleToFill" id="EcN-Gk-5hT" customClass="OpenDraftHeaderOverlayView" customModule="StackedDrafts" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="624" height="44"/>
@@ -35,8 +35,10 @@
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             <size key="customSize" width="624" height="388"/>
             <connections>
+                <outlet property="closeButton" destination="Zsp-zL-jAD" id="WIJ-RJ-9ko"/>
                 <outlet property="headerView" destination="EcN-Gk-5hT" id="pLg-Ju-R5R"/>
                 <outlet property="previewContainerView" destination="9EB-1b-bFu" id="sHz-jo-hpq"/>
             </connections>
