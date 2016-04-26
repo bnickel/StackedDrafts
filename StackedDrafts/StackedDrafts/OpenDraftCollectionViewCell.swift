@@ -37,8 +37,8 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
             previewContainerView.subviews.last?.removeFromSuperview()
             if let snapshotView = snapshotView {
                 snapshotView.translatesAutoresizingMaskIntoConstraints = true
-                snapshotView.autoresizingMask = [.FlexibleWidth, .FlexibleWidth]
-                snapshotView.frame = previewContainerView.bounds
+                snapshotView.autoresizingMask = [.FlexibleRightMargin, .FlexibleBottomMargin]
+                snapshotView.frame.origin = CGPointZero
                 previewContainerView.addSubview(snapshotView)
             }
         }
@@ -46,8 +46,8 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
     
     var showHeader:Bool = true {
         didSet {
-            headerView.hidden = !showHeader
-            closeButton.hidden = !showHeader
+            headerView.alpha = showHeader ? 1 : 0
+            closeButton.alpha = showHeader ? 1 : 0
         }
     }
     

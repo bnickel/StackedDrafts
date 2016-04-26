@@ -125,11 +125,19 @@
 				EB049F211CCEA049007F836E /* OpenDraftSelectorViewController.swift */,
 				EB049F281CCEB86D007F836E /* OpenDraftCollectionViewCell.swift */,
 				EB049F291CCEB86D007F836E /* OpenDraftCollectionViewCell.xib */,
+				EB049F321CCFF5D6007F836E /* Layouts */,
+			);
+			name = "Multiple Draft Selection";
+			sourceTree = "<group>";
+		};
+		EB049F321CCFF5D6007F836E /* Layouts */ = {
+			isa = PBXGroup;
+			children = (
 				EB049F2C1CCFF515007F836E /* PresenterSelectedLayout.swift */,
 				EB049F2E1CCFF53D007F836E /* DraftSelectedCollectionViewLayout.swift */,
 				EB049F301CCFF56F007F836E /* AllDraftsCollectionViewLayout.swift */,
 			);
-			name = "Multiple Draft Selection";
+			name = Layouts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
