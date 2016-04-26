@@ -15,6 +15,7 @@
 		EB049F051CC96ED6007F836E /* DraftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F041CC96ED6007F836E /* DraftViewController.swift */; };
 		EB049F0B1CC97171007F836E /* StackedDrafts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB049F0A1CC97171007F836E /* StackedDrafts.framework */; };
 		EB049F0C1CC97171007F836E /* StackedDrafts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB049F0A1CC97171007F836E /* StackedDrafts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EB049F341CD01DDB007F836E /* UIView+AnimationLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = EB049F331CD01DDB007F836E /* UIView+AnimationLogging.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,7 @@
 		EB049EFE1CC96D15007F836E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB049F041CC96ED6007F836E /* DraftViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraftViewController.swift; sourceTree = "<group>"; };
 		EB049F0A1CC97171007F836E /* StackedDrafts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = StackedDrafts.framework; path = "/Users/bnickel/Library/Developer/Xcode/DerivedData/StackedDrafts-evqiqkegadwffidqqewspweytpec/Build/Products/Debug-iphonesimulator/StackedDrafts.framework"; sourceTree = "<absolute>"; };
+		EB049F331CD01DDB007F836E /* UIView+AnimationLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+AnimationLogging.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				EB049EF91CC96D15007F836E /* Assets.xcassets */,
 				EB049EFB1CC96D15007F836E /* LaunchScreen.storyboard */,
 				EB049EFE1CC96D15007F836E /* Info.plist */,
+				EB049F331CD01DDB007F836E /* UIView+AnimationLogging.m */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -161,6 +164,7 @@
 				EB049EF51CC96D15007F836E /* PresentingViewController.swift in Sources */,
 				EB049F051CC96ED6007F836E /* DraftViewController.swift in Sources */,
 				EB049EF31CC96D15007F836E /* AppDelegate.swift in Sources */,
+				EB049F341CD01DDB007F836E /* UIView+AnimationLogging.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,10 +279,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.stackexchange.Demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -286,6 +292,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = Demo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.stackexchange.Demo;
