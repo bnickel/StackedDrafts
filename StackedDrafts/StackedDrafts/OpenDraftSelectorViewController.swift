@@ -275,7 +275,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
             
             attributes.bounds = CGRect(origin: CGPointZero, size: size)
             attributes.zIndex = i
-            attributes.transform3D = rotateDown(degrees: 61, itemHeight: size.height, scale: scale)
+            attributes.transform3D = rotateDown(degrees: angleInDegrees, itemHeight: size.height, scale: scale)
             attributes.center = topCenter
             
             allAttributes.append(attributes)
@@ -296,7 +296,6 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         let rotation = CATransform3DMakeRotation(angleOfRotation, 1, 0, 0)
         
         let translateDown = CATransform3DMakeTranslation(0, itemHeight / 2, 0)
-        let translateUp = CATransform3DMakeTranslation(0, -itemHeight / 2, 0)
         let scale = CATransform3DMakeScale(scale, scale, scale)
         
         var perspective = CATransform3DIdentity

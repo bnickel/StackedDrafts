@@ -14,20 +14,20 @@ class OpenDraftHeaderOverlayView: UIView {
     @IBOutlet private var contentView: UIView?
     @IBOutlet private var label: UILabel?
     
-    override public init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         loadContentView()
     }
     
-    convenience public init() {
+    convenience init() {
         self.init(frame: CGRectZero)
     }
     
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    public override func awakeFromNib() {
+    override func awakeFromNib() {
         super.awakeFromNib()
         loadContentView()
     }
