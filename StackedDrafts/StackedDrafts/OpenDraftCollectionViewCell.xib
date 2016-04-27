@@ -24,9 +24,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Zsp-zL-jAD">
-                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="23" height="44"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" red="0.04727923799" green="1" blue="0.00060984911910000003" alpha="1" colorSpace="calibratedRGB"/>
                         <state key="normal" title="X"/>
                         <connections>
                             <action selector="closeButtonTapped" destination="gTV-IL-0wX" eventType="touchUpInside" id="fDe-Z7-mFX"/>

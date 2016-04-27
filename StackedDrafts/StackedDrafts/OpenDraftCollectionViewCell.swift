@@ -47,7 +47,13 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
     var showHeader:Bool = true {
         didSet {
             headerView.alpha = showHeader ? 1 : 0
-            closeButton.alpha = showHeader ? 1 : 0
+            closeButton.alpha = showHeader && showCloseButton ? 1 : 0
+        }
+    }
+    
+    var showCloseButton:Bool = true {
+        didSet {
+            closeButton.alpha = showHeader && showCloseButton ? 1 : 0
         }
     }
     

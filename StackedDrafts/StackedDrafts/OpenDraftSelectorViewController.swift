@@ -69,6 +69,35 @@ class OpenDraftSelectorViewController: UIViewController {
             (collectionView.cellForItemAtIndexPath(indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots?[indexPath.item]
         }
     }
+    
+    private func animateSwitchToLayout(layout:UICollectionViewLayout, parallelAnimation:(() -> Void)?, completion:(() -> Void)?) {
+        
+        view.layer.speed = 0.75
+        
+        var needed = 1
+        func tryComplete(_:Bool) {
+            needed -= 1
+            if needed == 0 {
+                view.layer.speed = 1
+                completion?()
+            }
+        }
+        
+        collectionView.setCollectionViewLayout(layout, animated: true, completion: tryComplete)
+        
+        if let parallelAnimation = parallelAnimation {
+            needed += 1
+            UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions(rawValue: 4), animations: parallelAnimation, completion: tryComplete)
+        }
+    }
+    
+    private func forEachVisibleCell(@noescape block: (OpenDraftCollectionViewCell) -> Void) {
+        for cell in collectionView.visibleCells() {
+            if let cell = cell as? OpenDraftCollectionViewCell {
+                block(cell)
+            }
+        }
+    }
 }
 
 extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollectionViewDelegate {
@@ -104,18 +133,12 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         guard let viewController = self.selectableViewControllers[indexPath.item - 1] as? UIViewController else { return }
         
         draftSelectedLayout.selectedIndex = indexPath.item
-        view.layer.speed = 0.75
-        collectionView.setCollectionViewLayout(draftSelectedLayout, animated: true, completion: { _ in
+        animateSwitchToLayout(draftSelectedLayout, parallelAnimation: {
+            self.forEachVisibleCell({ $0.showHeader = false })
+        }, completion: {
             self.view.layer.speed = 1
             self.swapForViewController(viewController)
         })
-        UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions(rawValue: 4), animations: {
-            for cell in self.collectionView.visibleCells() {
-                if let cell = cell as? OpenDraftCollectionViewCell {
-                    cell.showHeader = false
-                }
-            }
-        }, completion: nil)
     }
     
     // For I walk through the valley of the shadow of death...
@@ -161,6 +184,7 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
         
         let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as! OpenDraftSelectorViewController
         let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
+        let collectionView = toViewController.collectionView
         
         let finalFrameRelativeToSuperview = transitionContext.finalFrameForViewController(toViewController)
         let finalFrame = toViewController.view.superview?.convertRect(finalFrameRelativeToSuperview, toView: toView.superview) ?? finalFrameRelativeToSuperview
@@ -171,10 +195,13 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
         toViewController.source = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)
         toViewController.loadSnapshotsIfNeeded()
         
-        toView.layer.speed = 0.75
         toViewController.collectionView.collectionViewLayout = toViewController.initialLayout
-        toViewController.collectionView.setCollectionViewLayout(toViewController.normalLayout, animated: true, completion: { _ in
-            toView.layer.speed = 1
+        toViewController.collectionView.reloadData()
+        toViewController.forEachVisibleCell({ $0.showCloseButton = false })
+        
+        toViewController.animateSwitchToLayout(toViewController.normalLayout, parallelAnimation: { 
+            toViewController.forEachVisibleCell({ $0.showCloseButton = true })
+        }, completion: {
             if transitionContext.transitionWasCancelled() {
                 toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
@@ -205,15 +232,21 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
         fromView.frame = initialFrame
         fromView.layoutIfNeeded()
         
-        fromView.layer.speed = 0.75
-        fromViewController.collectionView.setCollectionViewLayout(fromViewController.initialLayout, animated: true, completion: { _ in
-            fromView.layer.speed = 1
+        
+        fromViewController.animateSwitchToLayout(fromViewController.initialLayout, parallelAnimation: { 
+            fromViewController.forEachVisibleCell({ $0.showCloseButton = false })
+        }, completion: {
             if transitionContext.transitionWasCancelled() {
                 transitionContext.completeTransition(false)
             } else {
                 fromView.removeFromSuperview()
                 transitionContext.completeTransition(true)
             }
+        })
+        
+        fromView.layer.speed = 0.75
+        fromViewController.collectionView.setCollectionViewLayout(fromViewController.initialLayout, animated: true, completion: { _ in
+            fromView.layer.speed = 1
         })
     }
 }
