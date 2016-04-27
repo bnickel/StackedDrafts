@@ -37,6 +37,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
             
             let indexPath = NSIndexPath(forItem: i, inSection: 0)
             let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+            let size = i == 0 ? size : UIEdgeInsetsInsetRect(CGRect(origin: CGPointZero, size: size), DraftPresentationController.presentedInsets).size
             
             attributes.bounds = CGRect(origin: CGPointZero, size: size)
             attributes.zIndex = i
