@@ -184,7 +184,11 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         })
     }
     
-    // For I walk through the valley of the shadow of death...
+    /**
+     As elegant and clever as UIViewControllerAnimatedTransitioning is, going from A presents B to A presents C without showing A is the fucking worst.
+     
+     Something specific in iOS8+ triggers a rendering to occur between subsequent transitions so the best thing I've come up with is putting a snapshot of the view over the the whole window until the transition completes.
+    */
     private func swapForViewController(viewController:UIViewController) {
         
         guard let presentingViewController = presentingViewController, let window = presentingViewController.view.window else { return }
@@ -194,7 +198,6 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         presentingViewController.dismissViewControllerAnimated(false, completion: nil)
         presentingViewController.presentViewController(viewController, animated: false, completion: {
             dispatch_async(dispatch_get_main_queue(), {
-                // FUCK FUCK FUCK FUCK FUCK WHY ISN'T ANYTHING WORKING CONSISTENTLY?
                 snapshot.removeFromSuperview()
             })
         })
