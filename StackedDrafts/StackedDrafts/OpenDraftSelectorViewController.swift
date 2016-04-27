@@ -98,6 +98,14 @@ class OpenDraftSelectorViewController: UIViewController {
             }
         }
     }
+    
+    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+        snapshots = nil
+        forEachVisibleCell({ $0.snapshotView = nil })
+        coordinator.animateAlongsideTransition(nil, completion: { context in
+            self.loadSnapshotsIfNeeded()
+        })
+    }
 }
 
 extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollectionViewDelegate {
