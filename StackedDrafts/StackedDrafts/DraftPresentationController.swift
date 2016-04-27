@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol DraftViewControllerProtocol : NSObjectProtocol {
+@objc public protocol DraftViewControllerProtocol : NSObjectProtocol {
     var draggableView:UIView? { get }
     var draftTitle:String? { get }
 }

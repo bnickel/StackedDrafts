@@ -19,8 +19,9 @@ class OpenDraftSelectorViewController: UIViewController {
     
     weak var source: UIViewController?
     
-    init(source: UIViewController) {
+    init() {
         super.init(nibName: nil, bundle: nil)
+        self.restorationClass = OpenDraftSelectorViewController.self
         self.modalPresentationStyle = .OverFullScreen
         self.transitioningDelegate = self
     }
@@ -31,7 +32,7 @@ class OpenDraftSelectorViewController: UIViewController {
     
     override func loadView() {
         let frame = CGRectMake(0, 0, 100, 100)
-        let collectionView = UICollectionView(frame: frame, collectionViewLayout: initialLayout)
+        let collectionView = UICollectionView(frame: frame, collectionViewLayout: normalLayout)
         collectionView.backgroundColor = UIColor.blackColor()
         collectionView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         collectionView.alwaysBounceVertical = true
@@ -52,6 +53,11 @@ class OpenDraftSelectorViewController: UIViewController {
         collectionView.reloadData()
     }
     
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        loadSnapshotsIfNeeded()
+    }
+    
     func render(draftViewController:DraftViewControllerProtocol) -> UIView {
         guard let viewController = draftViewController as? UIViewController else { preconditionFailure() }
         viewController.view.frame = UIEdgeInsetsInsetRect(view.bounds, DraftPresentationController.presentedInsets)
@@ -63,7 +69,7 @@ class OpenDraftSelectorViewController: UIViewController {
     
     func loadSnapshotsIfNeeded() {
         guard snapshots == nil else { return }
-        snapshots = [source?.view.snapshotViewAfterScreenUpdates(false)] + selectableViewControllers.map(render)
+        snapshots = [source?.view.snapshotViewAfterScreenUpdates(true)] + selectableViewControllers.map(render)
         
         for indexPath in collectionView.indexPathsForVisibleItems() {
             (collectionView.cellForItemAtIndexPath(indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots?[indexPath.item]
@@ -71,7 +77,7 @@ class OpenDraftSelectorViewController: UIViewController {
     }
     
     func reloadSourceSnapshot() {
-        let snapshot = source?.view.snapshotViewAfterScreenUpdates(false)
+        let snapshot = source?.view.snapshotViewAfterScreenUpdates(true)
         (collectionView.cellForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0)) as? OpenDraftCollectionViewCell)?.snapshotView = snapshot
         
         if snapshots?.count > 0 {
@@ -278,5 +284,50 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
                 transitionContext.completeTransition(true)
             }
         })
+    }
+}
+
+extension OpenDraftSelectorViewController : UIViewControllerRestoration {
+    
+    static func viewControllerWithRestorationIdentifierPath(identifierComponents: [AnyObject], coder: NSCoder) -> UIViewController? {
+        let viewController = OpenDraftSelectorViewController()
+        viewController.restorationIdentifier = identifierComponents.last as? String
+        return viewController
+    }
+    
+    override func encodeRestorableStateWithCoder(coder: NSCoder) {
+        super.encodeRestorableStateWithCoder(coder)
+        coder.encodeObject(source, forKey: "source")
+        coder.encodeSafeArray(selectableViewControllers, forKey: "selectableViewControllers")
+    }
+    
+    override func decodeRestorableStateWithCoder(coder: NSCoder) {
+        source = coder.decodeObjectForKey("source") as? UIViewController
+        selectableViewControllers = coder.decodeSafeArrayForKey("selectableViewControllers")
+        collectionView.reloadData()
+        super.decodeRestorableStateWithCoder(coder)
+    }
+    
+    override func applicationFinishedRestoringState() {
+        super.applicationFinishedRestoringState()
+    }
+}
+
+extension UIViewController {
+    
+    var hasRestorationSource:Bool {
+        return restorationClass != nil || storyboard != nil
+    }
+    
+    var isRestorationEligible:Bool {
+        return hasRestorationSource && restorationIdentifier != nil
+    }
+    
+    func setRestorationIdentifier(restorationIdentifier:String, contingentOnViewController previousViewController:UIViewController) {
+        if previousViewController.isRestorationEligible && hasRestorationSource {
+            self.restorationIdentifier = restorationIdentifier
+        } else {
+            self.restorationIdentifier = nil
+        }
     }
 }
