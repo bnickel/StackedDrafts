@@ -133,9 +133,9 @@
 		EB049F321CCFF5D6007F836E /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
+				EB049F301CCFF56F007F836E /* AllDraftsCollectionViewLayout.swift */,
 				EB049F2C1CCFF515007F836E /* PresenterSelectedLayout.swift */,
 				EB049F2E1CCFF53D007F836E /* DraftSelectedCollectionViewLayout.swift */,
-				EB049F301CCFF56F007F836E /* AllDraftsCollectionViewLayout.swift */,
 			);
 			name = Layouts;
 			sourceTree = "<group>";

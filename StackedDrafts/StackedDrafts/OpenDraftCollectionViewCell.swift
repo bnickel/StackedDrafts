@@ -18,8 +18,11 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         headerView.labelText = "Able was I, ere I saw Elba."
     }
+    
+    var closeTapped:((OpenDraftCollectionViewCell) -> Void)?
 
     @IBAction private func closeButtonTapped() {
+        closeTapped?(self)
     }
     
     private static let reuseIdentifier = "OpenDraftCollectionViewCell"

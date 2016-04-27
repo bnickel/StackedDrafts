@@ -13,19 +13,19 @@
 		EB049EFA1CC96D15007F836E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB049EF91CC96D15007F836E /* Assets.xcassets */; };
 		EB049EFD1CC96D15007F836E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB049EFB1CC96D15007F836E /* LaunchScreen.storyboard */; };
 		EB049F051CC96ED6007F836E /* DraftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB049F041CC96ED6007F836E /* DraftViewController.swift */; };
-		EB049F0B1CC97171007F836E /* StackedDrafts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB049F0A1CC97171007F836E /* StackedDrafts.framework */; };
-		EB049F0C1CC97171007F836E /* StackedDrafts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB049F0A1CC97171007F836E /* StackedDrafts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB049F341CD01DDB007F836E /* UIView+AnimationLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = EB049F331CD01DDB007F836E /* UIView+AnimationLogging.m */; };
+		EB049F361CD048B4007F836E /* StackedDrafts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB049F351CD048B4007F836E /* StackedDrafts.framework */; };
+		EB049F371CD048B4007F836E /* StackedDrafts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB049F351CD048B4007F836E /* StackedDrafts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		EB049F0D1CC97172007F836E /* Embed Frameworks */ = {
+		EB049F381CD048B4007F836E /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				EB049F0C1CC97171007F836E /* StackedDrafts.framework in Embed Frameworks */,
+				EB049F371CD048B4007F836E /* StackedDrafts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,6 +43,7 @@
 		EB049F041CC96ED6007F836E /* DraftViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraftViewController.swift; sourceTree = "<group>"; };
 		EB049F0A1CC97171007F836E /* StackedDrafts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = StackedDrafts.framework; path = "/Users/bnickel/Library/Developer/Xcode/DerivedData/StackedDrafts-evqiqkegadwffidqqewspweytpec/Build/Products/Debug-iphonesimulator/StackedDrafts.framework"; sourceTree = "<absolute>"; };
 		EB049F331CD01DDB007F836E /* UIView+AnimationLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+AnimationLogging.m"; sourceTree = "<group>"; };
+		EB049F351CD048B4007F836E /* StackedDrafts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = StackedDrafts.framework; path = "/Users/bnickel/Library/Developer/Xcode/DerivedData/StackedDrafts-evqiqkegadwffidqqewspweytpec/Build/Products/Debug-iphoneos/StackedDrafts.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB049F0B1CC97171007F836E /* StackedDrafts.framework in Frameworks */,
+				EB049F361CD048B4007F836E /* StackedDrafts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +61,7 @@
 		EB049EE61CC96D15007F836E = {
 			isa = PBXGroup;
 			children = (
+				EB049F351CD048B4007F836E /* StackedDrafts.framework */,
 				EB049F0A1CC97171007F836E /* StackedDrafts.framework */,
 				EB049EF11CC96D15007F836E /* Demo */,
 				EB049EF01CC96D15007F836E /* Products */,
@@ -99,7 +101,7 @@
 				EB049EEB1CC96D15007F836E /* Sources */,
 				EB049EEC1CC96D15007F836E /* Frameworks */,
 				EB049EED1CC96D15007F836E /* Resources */,
-				EB049F0D1CC97172007F836E /* Embed Frameworks */,
+				EB049F381CD048B4007F836E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

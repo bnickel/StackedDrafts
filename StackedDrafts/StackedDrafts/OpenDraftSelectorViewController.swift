@@ -70,6 +70,15 @@ class OpenDraftSelectorViewController: UIViewController {
         }
     }
     
+    func reloadSourceSnapshot() {
+        let snapshot = source?.view.snapshotViewAfterScreenUpdates(false)
+        (collectionView.cellForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0)) as? OpenDraftCollectionViewCell)?.snapshotView = snapshot
+        
+        if snapshots?.count > 0 {
+            snapshots?[0] = snapshot
+        }
+    }
+    
     private func animateSwitchToLayout(layout:UICollectionViewLayout, parallelAnimation:(() -> Void)?, completion:(() -> Void)?) {
         
         view.layer.speed = 0.75
@@ -106,6 +115,25 @@ class OpenDraftSelectorViewController: UIViewController {
             self.loadSnapshotsIfNeeded()
         })
     }
+    
+    private func removeViewController(at indexPath:NSIndexPath) {
+        guard indexPath.item != 0 else { return }
+        
+        if selectableViewControllers.count > 1 {
+            let removed = selectableViewControllers.removeAtIndex(indexPath.item - 1)
+            snapshots?.removeAtIndex(indexPath.item)
+            collectionView.deleteItemsAtIndexPaths([indexPath])
+            OpenDraftsManager.sharedInstance.remove(removed)
+        } else {
+            OpenDraftsManager.sharedInstance.remove(selectableViewControllers[0])
+            dismissViewControllerAnimated(true, completion: nil)
+        }
+    }
+    
+    private func removeViewController(from cell:UICollectionViewCell) {
+        guard let indexPath = collectionView.indexPathForCell(cell) else { return }
+        self.removeViewController(at:indexPath)
+    }
 }
 
 extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollectionViewDelegate {
@@ -129,6 +157,8 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
             view.draftTitle = selectableViewControllers[indexPath.item - 1].draftTitle
         }
         
+        view.closeTapped = removeViewController(from:)
+        
         return view
     }
     
@@ -144,7 +174,6 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         animateSwitchToLayout(draftSelectedLayout, parallelAnimation: {
             self.forEachVisibleCell({ $0.showHeader = false })
         }, completion: {
-            self.view.layer.speed = 1
             self.swapForViewController(viewController)
         })
     }
@@ -237,6 +266,7 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
         fromView.frame = initialFrame
         fromView.layoutIfNeeded()
         
+        fromViewController.reloadSourceSnapshot()
         
         fromViewController.animateSwitchToLayout(fromViewController.initialLayout, parallelAnimation: { 
             fromViewController.forEachVisibleCell({ $0.showCloseButton = false })
@@ -247,11 +277,6 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
                 fromView.removeFromSuperview()
                 transitionContext.completeTransition(true)
             }
-        })
-        
-        fromView.layer.speed = 0.75
-        fromViewController.collectionView.setCollectionViewLayout(fromViewController.initialLayout, animated: true, completion: { _ in
-            fromView.layer.speed = 1
         })
     }
 }

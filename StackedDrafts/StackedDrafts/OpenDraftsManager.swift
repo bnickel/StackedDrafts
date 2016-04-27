@@ -33,13 +33,12 @@ public class OpenDraftsManager {
     
     @objc private func didPresent(notification:NSNotification) {
         guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController.rawValue] as? DraftViewControllerProtocol else { return }
-        openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController }) + [viewController]
+        add(viewController)
     }
     
     @objc private func willDismissNonInteractive(notification:NSNotification) {
         guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController.rawValue] as? DraftViewControllerProtocol else { return }
-        
-        openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController })
+        remove(viewController)
     }
     
     public func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
@@ -54,5 +53,9 @@ public class OpenDraftsManager {
     
     public func add(viewController:DraftViewControllerProtocol) {
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController }) + [viewController]
+    }
+    
+    func remove(viewController:DraftViewControllerProtocol) {
+        openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController })
     }
 }

@@ -29,7 +29,13 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         
         let clampedCount = max(2, min(count, 5))
         let verticalGap = (size.height - 80) / CGFloat(clampedCount)
-        let angleInDegrees:CGFloat = 61
+        
+        let angleInDegrees:CGFloat
+        switch clampedCount {
+        case 2:  angleInDegrees = 30
+        case 3:  angleInDegrees = 45
+        default: angleInDegrees = 61
+        }
         
         var allAttributes:[UICollectionViewLayoutAttributes] = []
         
@@ -79,8 +85,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     }
     
     override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        precondition(indexPath.section == 0)
-        return allAttributes[indexPath.item]
+        return allAttributes.indices.contains(indexPath.item) ? allAttributes[indexPath.item] : nil
     }
     
     override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
@@ -88,6 +93,6 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     }
     
     override func initialLayoutAttributesForAppearingItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        return allAttributes[indexPath.item]
+        return allAttributes.indices.contains(indexPath.item) ? allAttributes[indexPath.item] : nil
     }
 }

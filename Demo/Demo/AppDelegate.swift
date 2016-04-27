@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
-        let viewControllersToInstantiate = 2
+        let viewControllersToInstantiate = 0
         if let storyboard = window?.rootViewController?.storyboard {
             
             for _ in 0 ..< viewControllersToInstantiate {

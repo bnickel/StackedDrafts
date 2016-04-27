@@ -32,7 +32,7 @@ class PresenterSelectedLayout : UICollectionViewLayout {
         for i in 1 ..< count {
             let indexPath = NSIndexPath(forItem: i, inSection: 0)
             let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-            attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: count - 1)), size: size)
+            attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)), size: size)
             attributes.zIndex = i
             allAttributes.append(attributes)
         }
