@@ -13,7 +13,10 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
     
     @IBOutlet var draggableView: UIView?
     
-    let draftTitle: String? = "New Message"
+    static var count = 0
+    static func getIndex() -> Int { count += 1; return count }
+    
+    let draftTitle: String? = "New Message \(DraftViewController.getIndex())"
     
     override func awakeFromNib() {
         super.awakeFromNib()

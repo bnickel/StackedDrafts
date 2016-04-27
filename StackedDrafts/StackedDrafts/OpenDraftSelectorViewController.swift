@@ -87,7 +87,7 @@ class OpenDraftSelectorViewController: UIViewController {
         
         if let parallelAnimation = parallelAnimation {
             needed += 1
-            UIView.animateWithDuration(0.3, delay: 0, options: UIViewAnimationOptions(rawValue: 4), animations: parallelAnimation, completion: tryComplete)
+            UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions(rawValue: 4), animations: parallelAnimation, completion: tryComplete)
         }
     }
     
@@ -152,18 +152,15 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
     // For I walk through the valley of the shadow of death...
     private func swapForViewController(viewController:UIViewController) {
         
-        guard let presentingViewController = presentingViewController else { return }
-        let window = UIWindow(frame: view.window!.frame)
-        window.addSubview(view.snapshotViewAfterScreenUpdates(true))
-        window.makeKeyAndVisible()
+        guard let presentingViewController = presentingViewController, let window = presentingViewController.view.window else { return }
+        let snapshot = view.snapshotViewAfterScreenUpdates(true)
+        window.addSubview(snapshot)
         
-        let whereIsYourGodNow = true
         presentingViewController.dismissViewControllerAnimated(false, completion: nil)
-        presentingViewController.presentViewController(viewController, animated: whereIsYourGodNow, completion: {
+        presentingViewController.presentViewController(viewController, animated: false, completion: {
             dispatch_async(dispatch_get_main_queue(), {
                 // FUCK FUCK FUCK FUCK FUCK WHY ISN'T ANYTHING WORKING CONSISTENTLY?
-                viewController.view.window!.makeKeyAndVisible()
-                window.hidden = true
+                snapshot.removeFromSuperview()
             })
         })
     }
