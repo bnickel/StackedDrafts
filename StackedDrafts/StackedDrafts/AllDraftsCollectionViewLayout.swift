@@ -12,11 +12,18 @@ func * (a: CATransform3D, b: CATransform3D) -> CATransform3D {
     return CATransform3DConcat(a, b)
 }
 
+struct PannedItem {
+    let indexPath:NSIndexPath
+    var translation:CGPoint
+}
+
 class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     
     private var allAttributes:[UICollectionViewLayoutAttributes] = []
     private var contentSize = CGSizeZero
     private var changingBounds = false
+    
+    var pannedItem:PannedItem? { didSet { invalidateLayout() } }
     
     override func prepareLayout() {
         guard let collectionView = collectionView else { return }
@@ -50,6 +57,11 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
             attributes.zIndex = i
             attributes.transform3D = rotateDown(degrees: angleInDegrees, itemHeight: size.height, scale: scale)
             attributes.center = topCenter
+            
+            if let pannedItem = pannedItem where pannedItem.indexPath.item == i {
+                let delta = pannedItem.translation.x
+                attributes.center.x += delta > 0 ? sqrt(delta) : delta
+            }
             
             allAttributes.append(attributes)
             

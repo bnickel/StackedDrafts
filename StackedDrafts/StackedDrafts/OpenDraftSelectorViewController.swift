@@ -15,6 +15,8 @@ class OpenDraftSelectorViewController: UIViewController {
     private let draftSelectedLayout = DraftSelectedCollectionViewLayout()
     private var selectableViewControllers:[DraftViewControllerProtocol] = []
     
+    private var lastPanTimestamp:NSTimeInterval = 0
+    
     private var collectionView:UICollectionView!
     
     weak var source: UIViewController?
@@ -54,6 +56,12 @@ class OpenDraftSelectorViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.reloadData()
+        
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
+        panGestureRecognizer.minimumNumberOfTouches = 1
+        panGestureRecognizer.maximumNumberOfTouches = 1
+        panGestureRecognizer.delegate = self
+        collectionView.addGestureRecognizer(panGestureRecognizer)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -152,6 +160,50 @@ class OpenDraftSelectorViewController: UIViewController {
     private func removeViewController(from cell:UICollectionViewCell) {
         guard let indexPath = collectionView.indexPathForCell(cell) else { return }
         self.removeViewController(at:indexPath)
+    }
+}
+
+extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
+    
+    @objc func panned(gestureRecognizer: UIPanGestureRecognizer) {
+        
+        let now = NSDate.timeIntervalSinceReferenceDate()
+        
+        switch gestureRecognizer.state {
+        case .Began:
+            lastPanTimestamp = now
+            if let indexPath = collectionView.indexPathForItemAtPoint(gestureRecognizer.locationInView(collectionView)) where indexPath.item != 0 {
+                normalLayout.pannedItem = PannedItem(indexPath: indexPath, translation: gestureRecognizer.translationInView(collectionView))
+            }
+            
+        case .Changed:
+            lastPanTimestamp = now
+            normalLayout.pannedItem?.translation = gestureRecognizer.translationInView(collectionView)
+            
+        default:
+            collectionView.performBatchUpdates({
+                defer { self.normalLayout.pannedItem = nil }
+                guard let pannedItem = self.normalLayout.pannedItem else { return }
+                let delta = gestureRecognizer.translationInView(self.collectionView).x
+                
+                if delta < -(self.collectionView.frame.width / 2) || (delta < 0 && gestureRecognizer.velocityInView(self.collectionView).x < 0 && (now - self.lastPanTimestamp) < 0.25) {
+                    self.removeViewController(at: pannedItem.indexPath)
+                }
+                
+            }, completion: nil)
+        }
+        
+    }
+    
+    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard collectionView.collectionViewLayout == normalLayout else { return false }
+        guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer else { return false }
+        
+        let velocity = gestureRecognizer.velocityInView(collectionView)
+        guard abs(velocity.x) > abs(velocity.y) else { return false }
+        guard let indexPath = collectionView.indexPathForItemAtPoint(gestureRecognizer.locationInView(collectionView)) where indexPath.item != 0 else { return false }
+        
+        return true
     }
 }
 

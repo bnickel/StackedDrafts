@@ -141,7 +141,7 @@ extension DraftPresentationController {
         if let presentedViewController = presentedViewController as? DraftViewControllerProtocol {
             presentedViewController.draggableView?.addGestureRecognizer(interactiveDismissalGestureRecognizer)
         } else if let presentedViewController = presentedViewController as? UINavigationController {
-            presentedViewController.navigationBar.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(panned(_:))))
+            presentedViewController.navigationBar.addGestureRecognizer(interactiveDismissalGestureRecognizer)
         }
     }
     
