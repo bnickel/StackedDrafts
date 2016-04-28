@@ -24,11 +24,13 @@ class DraftPresentationController : UIPresentationController {
         }
     }
     
+    var shouldMinimize:Bool = false
     var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil
     private lazy var interactiveDismissalGestureRecognizer:UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
     private var lastInteractionTimestamp:NSTimeInterval = 0
     
     private let wrappingView = UIView()
+    private let accessibilityDismissalView = AccessibilityDismissalView()
     private lazy var headerOverlayView = OpenDraftHeaderOverlayView()
     var hasBeenPresented = false
     
@@ -45,6 +47,7 @@ class DraftPresentationController : UIPresentationController {
         configureViews()
         addPresentationScalingAnimation()
         addPresentationOverlayAnimations()
+        addAccessibilityDismissView()
     }
     
     override func dismissalTransitionWillBegin() {
@@ -115,7 +118,7 @@ private extension DraftPresentationController {
 private extension DraftPresentationController {
     
     func notifyThatDismissalWillBeginIfNonInteractive() {
-        guard interactiveTransitioning == nil else { return }
+        guard !shouldMinimize else { return }
         postNotification(notifications.willDismissNonInteractiveDraftViewController)
     }
     
@@ -149,6 +152,7 @@ extension DraftPresentationController {
         switch sender.state {
         case .Began:
             lastInteractionTimestamp = now
+            shouldMinimize = true
             interactiveTransitioning = UIPercentDrivenInteractiveTransition()
             presentingViewController.dismissViewControllerAnimated(true, completion: nil)
         case .Changed:
@@ -157,6 +161,7 @@ extension DraftPresentationController {
         case .Cancelled:
             interactiveTransitioning?.cancelInteractiveTransition()
             interactiveTransitioning = nil
+            shouldMinimize = false
         case .Ended:
             interactiveTransitioning?.completionCurve = .EaseOut
             if sender.velocityInView(containerView).y > 0 && (now - lastInteractionTimestamp) < 1 {
@@ -165,6 +170,7 @@ extension DraftPresentationController {
                 interactiveTransitioning?.cancelInteractiveTransition()
             }
             interactiveTransitioning = nil
+            shouldMinimize = false
         default:
             break
         }
@@ -176,7 +182,7 @@ extension DraftPresentationController {
     }
     
     var dismissalInset:CGFloat {
-        guard interactiveTransitioning != nil && presentedViewController is DraftViewControllerProtocol else { return 0 }
+        guard shouldMinimize && presentedViewController is DraftViewControllerProtocol else { return 0 }
         return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
     }
 }
@@ -185,11 +191,27 @@ extension DraftPresentationController {
 
 private extension DraftPresentationController {
     
+    class AccessibilityDismissalView : UIView {
+        weak var presentationController:DraftPresentationController?
+        
+        private override func accessibilityActivate() -> Bool {
+            guard let presentationController = presentationController else { return false }
+            presentationController.shouldMinimize = true
+            presentationController.presentingViewController.dismissViewControllerAnimated(true, completion: nil)
+            return true
+        }
+    }
+    
     func configureViews() {
         wrappingView.frame = presentedViewController.view.frame
         wrappingView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         wrappingView.addSubview(presentedViewController.view)
         presentedViewController.view.frame = wrappingView.bounds
+        
+        accessibilityDismissalView.accessibilityTraits = UIAccessibilityTraitButton
+        accessibilityDismissalView.accessibilityLabel = NSLocalizedString("Minimize draft", comment: "Accessibility")
+        accessibilityDismissalView.isAccessibilityElement = true
+        accessibilityDismissalView.presentationController = self
     }
     
     func addHeaderOverlayIfNeeded() {
@@ -202,6 +224,15 @@ private extension DraftPresentationController {
         headerOverlayView.translatesAutoresizingMaskIntoConstraints = true
         headerOverlayView.autoresizingMask = [.FlexibleWidth, .FlexibleBottomMargin]
         wrappingView.addSubview(headerOverlayView)
+    }
+    
+    func addAccessibilityDismissView() {
+        var frame = frameOfPresentedViewInContainerView()
+        frame.origin.y -= 20
+        frame.size.height = 20
+        
+        accessibilityDismissalView.frame = frame
+        containerView?.addSubview(accessibilityDismissalView)
     }
     
     func addPresentationOverlayAnimations() {
@@ -217,7 +248,7 @@ private extension DraftPresentationController {
     
     func addDismissalOverlayAnimations() {
         
-        if interactiveTransitioning != nil {
+        if shouldMinimize {
             addHeaderOverlayIfNeeded()
         }
         
