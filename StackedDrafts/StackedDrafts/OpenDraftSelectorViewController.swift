@@ -58,7 +58,7 @@ class OpenDraftSelectorViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        loadSnapshotsIfNeeded()
+        loadSnapshotsIfNeeded(animated: false)
     }
     
     func render(draftViewController:DraftViewControllerProtocol) -> UIView {
@@ -70,12 +70,20 @@ class OpenDraftSelectorViewController: UIViewController {
     
     var snapshots:[UIView?]? = nil
     
-    func loadSnapshotsIfNeeded() {
+    func loadSnapshotsIfNeeded(animated animated:Bool) {
         guard snapshots == nil else { return }
         snapshots = [source?.view.snapshotViewAfterScreenUpdates(true)] + selectableViewControllers.map(render)
         
         for indexPath in collectionView.indexPathsForVisibleItems() {
             (collectionView.cellForItemAtIndexPath(indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots?[indexPath.item]
+        }
+        
+        if animated {
+            let realSnapshots = snapshots?.flatMap({$0}) ?? []
+            for snapshot in realSnapshots { snapshot.alpha = 0 }
+            UIView.animateWithDuration(0.25) {
+                for snapshot in realSnapshots { snapshot.alpha = 1 }
+            }
         }
     }
     
@@ -123,7 +131,7 @@ class OpenDraftSelectorViewController: UIViewController {
         snapshots = nil
         forEachVisibleCell({ $0.snapshotView = nil })
         coordinator.animateAlongsideTransition(nil, completion: { context in
-            self.loadSnapshotsIfNeeded()
+            self.loadSnapshotsIfNeeded(animated: true)
         })
     }
     
@@ -244,7 +252,7 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
         toView.frame = finalFrame
         toView.layoutIfNeeded()
         toViewController.source = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)
-        toViewController.loadSnapshotsIfNeeded()
+        toViewController.loadSnapshotsIfNeeded(animated: false)
         
         toViewController.collectionView.collectionViewLayout = toViewController.initialLayout
         toViewController.collectionView.reloadData()

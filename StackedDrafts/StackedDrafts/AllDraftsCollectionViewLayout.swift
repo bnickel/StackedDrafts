@@ -16,6 +16,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     
     private var allAttributes:[UICollectionViewLayoutAttributes] = []
     private var contentSize = CGSizeZero
+    private var changingBounds = false
     
     override func prepareLayout() {
         guard let collectionView = collectionView else { return }
@@ -92,7 +93,17 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         return true
     }
     
+    override func prepareForAnimatedBoundsChange(oldBounds: CGRect) {
+        changingBounds = true
+        super.prepareForAnimatedBoundsChange(oldBounds)
+    }
+    
+    override func finalizeAnimatedBoundsChange() {
+        changingBounds = false
+        super.finalizeAnimatedBoundsChange()
+    }
+    
     override func initialLayoutAttributesForAppearingItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        return allAttributes.indices.contains(indexPath.item) ? allAttributes[indexPath.item] : nil
+        return allAttributes.indices.contains(indexPath.item) && !changingBounds ? allAttributes[indexPath.item] : nil
     }
 }
