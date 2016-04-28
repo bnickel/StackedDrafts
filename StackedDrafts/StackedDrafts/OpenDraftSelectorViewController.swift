@@ -88,7 +88,7 @@ class OpenDraftSelectorViewController: UIViewController {
         }
     }
     
-    private func animateSwitchToLayout(layout:UICollectionViewLayout, parallelAnimation:(() -> Void)?, completion:(() -> Void)?) {
+    private func animateSwitchToLayout(layout:UICollectionViewLayout, almostParallelAnimation:(() -> Void)?, parallelAtEnd:Bool, completion:(() -> Void)?) {
         
         view.layer.speed = 0.75
         
@@ -103,9 +103,11 @@ class OpenDraftSelectorViewController: UIViewController {
         
         collectionView.setCollectionViewLayout(layout, animated: true, completion: tryComplete)
         
-        if let parallelAnimation = parallelAnimation {
+        if let almostParallelAnimation = almostParallelAnimation {
             needed += 1
-            UIView.animateWithDuration(0.2, delay: 0, options: UIViewAnimationOptions(rawValue: 4), animations: parallelAnimation, completion: tryComplete)
+            dispatch_async(dispatch_get_main_queue(), { 
+                UIView.animateWithDuration(0.2, delay: parallelAtEnd ? 0.1 : 0, options: [], animations: almostParallelAnimation, completion: tryComplete)
+            })
         }
     }
     
@@ -180,9 +182,12 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         guard let viewController = self.selectableViewControllers[indexPath.item - 1] as? UIViewController else { return }
         
         draftSelectedLayout.selectedIndex = indexPath.item
-        animateSwitchToLayout(draftSelectedLayout, parallelAnimation: {
-            self.forEachVisibleCell({ $0.showHeader = false })
-        }, completion: {
+        animateSwitchToLayout(draftSelectedLayout, almostParallelAnimation: {
+            self.forEachVisibleCell({
+                $0.showHeader = false
+                $0.showGradientView = false
+            })
+        }, parallelAtEnd: false, completion: {
             self.swapForViewController(viewController)
         })
     }
@@ -243,17 +248,24 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
         
         toViewController.collectionView.collectionViewLayout = toViewController.initialLayout
         toViewController.collectionView.reloadData()
-        toViewController.forEachVisibleCell({ $0.showCloseButton = false })
         
-        toViewController.animateSwitchToLayout(toViewController.normalLayout, parallelAnimation: { 
-            toViewController.forEachVisibleCell({ $0.showCloseButton = true })
-        }, completion: {
+        toViewController.animateSwitchToLayout(toViewController.normalLayout, almostParallelAnimation: {
+            toViewController.forEachVisibleCell({
+                $0.showCloseButton = true
+                $0.showGradientView = true
+            })
+        }, parallelAtEnd: true, completion: {
             if transitionContext.transitionWasCancelled() {
                 toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
             } else {
                 transitionContext.completeTransition(true)
             }
+        })
+        
+        toViewController.forEachVisibleCell({
+            $0.showCloseButton = false
+            $0.showGradientView = false
         })
     }
 }
@@ -280,9 +292,13 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
         
         fromViewController.reloadSourceSnapshot()
         
-        fromViewController.animateSwitchToLayout(fromViewController.initialLayout, parallelAnimation: { 
-            fromViewController.forEachVisibleCell({ $0.showCloseButton = false })
-        }, completion: {
+        
+        fromViewController.animateSwitchToLayout(fromViewController.initialLayout, almostParallelAnimation: {
+            fromViewController.forEachVisibleCell({
+                $0.showCloseButton = false
+                $0.showGradientView = false
+            })
+        }, parallelAtEnd: false, completion: {
             if transitionContext.transitionWasCancelled() {
                 transitionContext.completeTransition(false)
             } else {

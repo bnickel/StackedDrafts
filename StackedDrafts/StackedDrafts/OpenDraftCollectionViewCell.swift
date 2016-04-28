@@ -8,11 +8,38 @@
 
 import UIKit
 
+@IBDesignable
+class GradientView: UIView {
+    
+    override class func layerClass() -> AnyClass {
+        return CAGradientLayer.self
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configure()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        configure()
+    }
+    
+    func configure() {
+        (layer as! CAGradientLayer).colors = [UIColor.blackColor().colorWithAlphaComponent(0), UIColor.blackColor().colorWithAlphaComponent(0.5)].map({ $0.CGColor })
+    }
+}
+
 class OpenDraftCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet private var previewContainerView: UIView!
     @IBOutlet private var closeButton: UIButton!
     @IBOutlet private var headerView: OpenDraftHeaderOverlayView!
+    @IBOutlet var gradientView: GradientView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -59,6 +86,12 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
         didSet {
             closeButton.alpha = showHeader && showCloseButton ? 1 : 0
             updateAccessibilityElements()
+        }
+    }
+    
+    var showGradientView:Bool = true {
+        didSet {
+            gradientView.alpha = showGradientView ? 1 : 0
         }
     }
     
