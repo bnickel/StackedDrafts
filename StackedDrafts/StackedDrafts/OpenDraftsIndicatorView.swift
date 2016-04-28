@@ -87,14 +87,14 @@ public class OpenDraftsIndicatorView: UIControl {
             customAccessibilityLabel = nil
             customAccessibilityHint = nil
         case 1:
-            customAccessibilityLabel = NSLocalizedString("Open draft: {title}", comment: "Accessibility")
+            customAccessibilityLabel = NSLocalizedString("One minimized draft: {title}", comment: "Accessibility")
                 .stringByReplacingOccurrencesOfString("{title}", withString: mostRecentDraftTitle ?? "Unknown")
             customAccessibilityHint = NSLocalizedString("Double tap to open", comment: "Accessibility")
         default:
-            customAccessibilityLabel = NSLocalizedString("{count} open drafts.  Most recent: {title}", comment: "Accessibility")
+            customAccessibilityLabel = NSLocalizedString("{count} minimized drafts. Most recent: {title}", comment: "Accessibility")
                 .stringByReplacingOccurrencesOfString("{count}", withString: NSNumberFormatter().stringFromNumber(numberOfOpenDrafts) ?? String(numberOfOpenDrafts))
                 .stringByReplacingOccurrencesOfString("{title}", withString: mostRecentDraftTitle ?? "Unknown")
-            customAccessibilityHint = NSLocalizedString("Double tap to pick", comment: "Accessibility")
+            customAccessibilityHint = NSLocalizedString("Double tap to select", comment: "Accessibility")
         }
         
         isAccessibilityElement = true
