@@ -22,12 +22,15 @@ class OpenDraftSelectorViewController: UIViewController {
     init() {
         super.init(nibName: nil, bundle: nil)
         self.restorationClass = OpenDraftSelectorViewController.self
-        self.modalPresentationStyle = .OverFullScreen
         self.transitioningDelegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
     }
     
     override func loadView() {
@@ -191,7 +194,7 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
     */
     private func swapForViewController(viewController:UIViewController) {
         
-        guard let presentingViewController = presentingViewController, let window = presentingViewController.view.window else { return }
+        guard let presentingViewController = presentingViewController, let window = view.window else { return }
         let snapshot = view.snapshotViewAfterScreenUpdates(true)
         window.addSubview(snapshot)
         

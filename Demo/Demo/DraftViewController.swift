@@ -25,6 +25,10 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
         transitioningDelegate = DraftTransitioningDelegate.sharedInstance
         modalPresentationStyle = .Custom
     }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
 }
 
 extension DraftViewController: UIViewControllerRestoration {
