@@ -51,18 +51,31 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
         didSet {
             headerView.alpha = showHeader ? 1 : 0
             closeButton.alpha = showHeader && showCloseButton ? 1 : 0
+            updateAccessibilityElements()
         }
     }
     
     var showCloseButton:Bool = true {
         didSet {
             closeButton.alpha = showHeader && showCloseButton ? 1 : 0
+            updateAccessibilityElements()
         }
     }
     
     var draftTitle:String? {
         didSet {
             headerView.labelText = draftTitle
+            updateAccessibilityElements()
         }
+    }
+    
+    // This is just lazy right here but want to ship.
+    // TODO: Don't be lazy.
+    func updateAccessibilityElements() {
+        previewContainerView.isAccessibilityElement = true
+        previewContainerView.accessibilityTraits = UIAccessibilityTraitButton
+        previewContainerView.accessibilityLabel = showHeader ? NSLocalizedString("Draft: ", comment: "Accessibility") + (headerView.labelText ?? "Untitled") : NSLocalizedString("Dismiss drafts", comment: "Accessibility")
+        closeButton.accessibilityLabel = NSLocalizedString("Close ", comment: "Accessibility") + (headerView.labelText ?? "Untitled")
+        accessibilityElements = showCloseButton && showHeader ? [previewContainerView, closeButton] : [previewContainerView]
     }
 }

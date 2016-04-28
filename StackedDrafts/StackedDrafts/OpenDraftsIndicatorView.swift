@@ -57,18 +57,47 @@ public class OpenDraftsIndicatorView: UIControl {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(didUpdateOpenDraftingControllers(_:)), name: OpenDraftsManager.notifications.didUpdateOpenDraftingControllers.rawValue, object: OpenDraftsManager.sharedInstance)
     }
     
+    override public var accessibilityLabel: String? {
+        set(value) { super.accessibilityLabel = value }
+        get { return super.accessibilityLabel ?? customAccessibilityLabel }
+    }
+    
+    override public var accessibilityHint: String? {
+        set(value) { super.accessibilityHint = value }
+        get { return super.accessibilityHint ?? customAccessibilityHint }
+    }
+    
+    private var customAccessibilityLabel:String? = nil
+    private var customAccessibilityHint:String? = nil
+    
     @objc private func didUpdateOpenDraftingControllers(_: NSNotification?) {
         let openDrafts = OpenDraftsManager.sharedInstance.openDraftingViewControllers
         setMostRecentDraftTitle(openDrafts.last?.draftTitle, numberOfOpenDrafts: openDrafts.count)
     }
     
     private func setMostRecentDraftTitle(mostRecentDraftTitle:String?, numberOfOpenDrafts:Int) {
-        accessibilityLabel = mostRecentDraftTitle
         mostRecentDraftView.labelText = mostRecentDraftTitle
         secondDraftView.hidden = numberOfOpenDrafts < 2
         thirdDraftView.hidden = numberOfOpenDrafts < 3
         mostRecentDraftTopConstraint.constant = CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
         intrinsicHeight = numberOfOpenDrafts > 0 ? OpenDraftsIndicatorView.displayedHeight : 0
+        
+        switch numberOfOpenDrafts {
+        case 0:
+            customAccessibilityLabel = nil
+            customAccessibilityHint = nil
+        case 1:
+            customAccessibilityLabel = NSLocalizedString("Open draft: {title}", comment: "Accessibility")
+                .stringByReplacingOccurrencesOfString("{title}", withString: mostRecentDraftTitle ?? "Unknown")
+            customAccessibilityHint = NSLocalizedString("Double tap to open", comment: "Accessibility")
+        default:
+            customAccessibilityLabel = NSLocalizedString("{count} open drafts.  Most recent: {title}", comment: "Accessibility")
+                .stringByReplacingOccurrencesOfString("{count}", withString: NSNumberFormatter().stringFromNumber(numberOfOpenDrafts) ?? String(numberOfOpenDrafts))
+                .stringByReplacingOccurrencesOfString("{title}", withString: mostRecentDraftTitle ?? "Unknown")
+            customAccessibilityHint = NSLocalizedString("Double tap to pick", comment: "Accessibility")
+        }
+        
+        isAccessibilityElement = true
     }
     
     public override func prepareForInterfaceBuilder() {
