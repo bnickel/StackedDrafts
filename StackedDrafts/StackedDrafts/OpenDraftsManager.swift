@@ -30,7 +30,7 @@ public class OpenDraftsManager : NSObject {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
-    private(set) var openDraftingViewControllers:[DraftViewControllerProtocol] = [] { didSet { notify() } }
+    private(set) public var openDraftingViewControllers:[DraftViewControllerProtocol] = [] { didSet { notify() } }
     
     private func notify() {
         NSNotificationCenter.defaultCenter().postNotificationName(notifications.didUpdateOpenDraftingControllers.rawValue, object: self, userInfo: nil)
