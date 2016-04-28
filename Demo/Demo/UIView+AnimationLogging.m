@@ -19,6 +19,10 @@ volatile BOOL SEViewLogAnimations = NO;
                                    class_getInstanceMethod(object_getClass(self), @selector(SE_animateWithDuration:delay:options:animations:completion:)));
     method_exchangeImplementations(class_getInstanceMethod(object_getClass(self), @selector(animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:)),
                                    class_getInstanceMethod(object_getClass(self), @selector(SE_animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:)));
+    
+    Method original = class_getInstanceMethod(self, @selector(viewForBaselineLayout));
+    class_addMethod(self, @selector(viewForFirstBaselineLayout), method_getImplementation(original), method_getTypeEncoding(original));
+    class_addMethod(self, @selector(viewForLastBaselineLayout), method_getImplementation(original), method_getTypeEncoding(original));
 }
 
 + (void)SE_animateWithDuration:(NSTimeInterval)duration delay:(NSTimeInterval)delay options:(UIViewAnimationOptions)options animations:(void (^)(void))animations completion:(void (^)(BOOL))completion
@@ -38,3 +42,20 @@ volatile BOOL SEViewLogAnimations = NO;
 }
 
 @end
+
+#ifdef DEBUG
+
+// http://stackoverflow.com/a/36926620/860000
+
+@implementation UIView (FixViewDebugging)
+
++ (void)load
+{
+    Method original = class_getInstanceMethod(self, @selector(viewForBaselineLayout));
+    class_addMethod(self, @selector(viewForFirstBaselineLayout), method_getImplementation(original), method_getTypeEncoding(original));
+    class_addMethod(self, @selector(viewForLastBaselineLayout), method_getImplementation(original), method_getTypeEncoding(original));
+}
+
+@end
+
+#endif
