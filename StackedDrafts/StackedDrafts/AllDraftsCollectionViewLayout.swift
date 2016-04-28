@@ -24,6 +24,8 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     private var changingBounds = false
     
     var pannedItem:PannedItem? { didSet { invalidateLayout() } }
+    @NSCopying var lastPannedItemAttributes:UICollectionViewLayoutAttributes?
+    var deletingPannedItem = false
     
     override func prepareLayout() {
         guard let collectionView = collectionView else { return }
@@ -58,14 +60,23 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
             attributes.transform3D = rotateDown(degrees: angleInDegrees, itemHeight: size.height, scale: scale)
             attributes.center = topCenter
             
+            let gapMultiplier:CGFloat
             if let pannedItem = pannedItem where pannedItem.indexPath.item == i {
                 let delta = pannedItem.translation.x
-                attributes.center.x += delta > 0 ? sqrt(delta) : delta
+                if delta > 0 {
+                    attributes.center.x += sqrt(delta)
+                    gapMultiplier = 1
+                } else {
+                    attributes.center.x += delta
+                    gapMultiplier = 1 - abs(delta) / size.width
+                }
+                lastPannedItemAttributes = attributes
+            } else {
+                gapMultiplier = 1
             }
             
             allAttributes.append(attributes)
-            
-            topCenter.y += verticalGap
+            topCenter.y += verticalGap * gapMultiplier
         }
         
         self.allAttributes = allAttributes
@@ -117,5 +128,14 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     
     override func initialLayoutAttributesForAppearingItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
         return allAttributes.indices.contains(indexPath.item) && !changingBounds ? allAttributes[indexPath.item] : nil
+    }
+    
+    override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+        if let lastPannedItemAttributes = lastPannedItemAttributes where deletingPannedItem && lastPannedItemAttributes.indexPath == itemIndexPath, let collectionView = collectionView {
+            lastPannedItemAttributes.center.x = -collectionView.frame.width / 2
+            return lastPannedItemAttributes
+        } else {
+            return super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)
+        }
     }
 }

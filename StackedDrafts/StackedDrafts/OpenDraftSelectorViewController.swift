@@ -187,10 +187,12 @@ extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
                 let delta = gestureRecognizer.translationInView(self.collectionView).x
                 
                 if delta < -(self.collectionView.frame.width / 2) || (delta < 0 && gestureRecognizer.velocityInView(self.collectionView).x < 0 && (now - self.lastPanTimestamp) < 0.25) {
+                    self.normalLayout.deletingPannedItem = true
                     self.removeViewController(at: pannedItem.indexPath)
                 }
-                
-            }, completion: nil)
+            }, completion: { _ in
+                self.normalLayout.deletingPannedItem = false
+            })
         }
         
     }
