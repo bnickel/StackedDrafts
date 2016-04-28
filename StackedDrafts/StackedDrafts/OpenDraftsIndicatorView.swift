@@ -18,7 +18,8 @@ public class OpenDraftsIndicatorView: UIControl {
     @IBOutlet private var thirdDraftView: UIView!
     
     private static let displayedHeight:CGFloat = 44
-    private var intrinsicHeight:CGFloat = 0 { didSet(old) { if intrinsicHeight != old { invalidateIntrinsicContentSize() } } }
+    private var heightConstraint:NSLayoutConstraint!
+    private var intrinsicHeight:CGFloat = 0 { didSet { heightConstraint.constant = intrinsicHeight } }
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -45,13 +46,16 @@ public class OpenDraftsIndicatorView: UIControl {
     private func loadContentView() {
         UINib(nibName: "OpenDraftsIndicatorView.contentView", bundle: NSBundle(forClass: OpenDraftsIndicatorView.self)).instantiateWithOwner(self, options: nil)
         
+        heightConstraint = attr(self, .Height) == intrinsicHeight
+        
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
         NSLayoutConstraint.activateConstraints([
             attr(contentView, .Leading) == attr(self, .Leading),
             attr(contentView, .Trailing) == attr(self, .Trailing),
             attr(contentView, .Top) == attr(self, .Top),
-            attr(contentView, .Height) == OpenDraftsIndicatorView.displayedHeight
+            attr(contentView, .Height) == OpenDraftsIndicatorView.displayedHeight,
+            heightConstraint
         ])
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(didUpdateOpenDraftingControllers(_:)), name: OpenDraftsManager.notifications.didUpdateOpenDraftingControllers.rawValue, object: OpenDraftsManager.sharedInstance)
@@ -107,10 +111,6 @@ public class OpenDraftsIndicatorView: UIControl {
     
     public override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
         return pointInside(point, withEvent: event) ? self : nil
-    }
-    
-    public override func intrinsicContentSize() -> CGSize {
-        return CGSize(width: 100, height: intrinsicHeight)
     }
     
     class func visibleHeaderHeight(numberOfOpenDrafts numberOfOpenDrafts: Int) -> CGFloat {
