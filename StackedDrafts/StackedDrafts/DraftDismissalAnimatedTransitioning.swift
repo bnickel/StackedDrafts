@@ -17,8 +17,25 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         super.init()
     }
     
+    /**
+     Sooo... in iOS 8 if the gap between `updateInteractiveTransition` and `finishInteractiveTransition` is below transitionDuration (with some amount of wiggle room), the animation's completion block will never call.  This hack drops the duration really low on iOS 8, then cranks down the interaction completion speed to compensate.
+     */
+    static var hackDuration:NSTimeInterval {
+        if #available(iOS 9, *) {
+            return normalDuration
+        } else {
+            return 0.05
+        }
+    }
+    
+    static let normalDuration:NSTimeInterval = 0.3
+    
+    static var interactiveCompletionSpeed: CGFloat {
+        return CGFloat(hackDuration / normalDuration)
+    }
+    
     func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
-        return 0.3
+        return interactiveTransitioning != nil ? self.dynamicType.hackDuration : self.dynamicType.normalDuration
     }
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {

@@ -57,11 +57,14 @@ class OpenDraftSelectorViewController: UIViewController {
         collectionView.delegate = self
         collectionView.reloadData()
         
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
-        panGestureRecognizer.minimumNumberOfTouches = 1
-        panGestureRecognizer.maximumNumberOfTouches = 1
-        panGestureRecognizer.delegate = self
-        collectionView.addGestureRecognizer(panGestureRecognizer)
+        // Swiping the last item renders poorly in iOS8.  I don't care about fixing it.
+        if #available(iOS 9, *) {
+            let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
+            panGestureRecognizer.minimumNumberOfTouches = 1
+            panGestureRecognizer.maximumNumberOfTouches = 1
+            panGestureRecognizer.delegate = self
+            collectionView.addGestureRecognizer(panGestureRecognizer)
+        }
     }
     
     override func viewDidAppear(animated: Bool) {

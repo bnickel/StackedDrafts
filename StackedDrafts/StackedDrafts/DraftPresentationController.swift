@@ -159,12 +159,14 @@ extension DraftPresentationController {
             lastInteractionTimestamp = now
             interactiveTransitioning?.updateInteractiveTransition(min(sender.translationInView(containerView).y / (presentedViewController.view.bounds.height - dismissalInset), 1))
         case .Cancelled:
+            interactiveTransitioning?.completionSpeed = DraftDismissalAnimatedTransitioning.interactiveCompletionSpeed
             interactiveTransitioning?.cancelInteractiveTransition()
             interactiveTransitioning = nil
             shouldMinimize = false
         case .Ended:
             interactiveTransitioning?.completionCurve = .EaseOut
-            if sender.velocityInView(containerView).y > 0 && (now - lastInteractionTimestamp) < 1 {
+            interactiveTransitioning?.completionSpeed = DraftDismissalAnimatedTransitioning.interactiveCompletionSpeed
+            if sender.velocityInView(containerView).y > 0 && (now - lastInteractionTimestamp) < 0.25 {
                 interactiveTransitioning?.finishInteractiveTransition()
             } else {
                 interactiveTransitioning?.cancelInteractiveTransition()
