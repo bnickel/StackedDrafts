@@ -83,6 +83,10 @@ class OpenDraftSelectorViewController: UIViewController {
     
     func loadSnapshotsIfNeeded(animated animated:Bool) {
         guard snapshots == nil else { return }
+        if source?.view.window == nil {
+            source?.view.frame = view.frame
+            source?.view.layoutIfNeeded()
+        }
         snapshots = [source?.view.snapshotViewAfterScreenUpdates(true)] + selectableViewControllers.map(render)
         
         for indexPath in collectionView.indexPathsForVisibleItems() {
@@ -342,16 +346,23 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
         
         let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as! OpenDraftSelectorViewController
         let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
+        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
         
         let initialFrameRelativeToSuperview = transitionContext.initialFrameForViewController(fromViewController)
         let initialFrame = fromViewController.view.superview?.convertRect(initialFrameRelativeToSuperview, toView: fromView.superview) ?? initialFrameRelativeToSuperview
+        
+        let finalFrameForPresenter = transitionContext.finalFrameForViewController(toViewController)
         
         transitionContext.containerView()?.addSubview(fromView)
         fromView.frame = initialFrame
         fromView.layoutIfNeeded()
         
-        fromViewController.reloadSourceSnapshot()
+        if !finalFrameForPresenter.isEmpty {
+            toViewController.view.frame = finalFrameForPresenter
+            toViewController.view.layoutIfNeeded()
+        }
         
+        fromViewController.reloadSourceSnapshot()
         
         fromViewController.animateSwitchToLayout(fromViewController.initialLayout, almostParallelAnimation: {
             fromViewController.forEachVisibleCell({
@@ -397,15 +408,15 @@ extension OpenDraftSelectorViewController : UIViewControllerRestoration {
 
 extension UIViewController {
     
-    var hasRestorationSource:Bool {
+    @nonobjc var hasRestorationSource:Bool {
         return restorationClass != nil || storyboard != nil
     }
     
-    var isRestorationEligible:Bool {
+    @nonobjc var isRestorationEligible:Bool {
         return hasRestorationSource && restorationIdentifier != nil
     }
     
-    func setRestorationIdentifier(restorationIdentifier:String, contingentOnViewController previousViewController:UIViewController) {
+    @nonobjc func setRestorationIdentifier(restorationIdentifier:String, contingentOnViewController previousViewController:UIViewController) {
         if previousViewController.isRestorationEligible && hasRestorationSource {
             self.restorationIdentifier = restorationIdentifier
         } else {
