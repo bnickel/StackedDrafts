@@ -296,11 +296,8 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
         
-        let duration = transitionDuration(transitionContext)
-        
         let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as! OpenDraftSelectorViewController
         let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
-        let collectionView = toViewController.collectionView
         
         let finalFrameRelativeToSuperview = transitionContext.finalFrameForViewController(toViewController)
         let finalFrame = toViewController.view.superview?.convertRect(finalFrameRelativeToSuperview, toView: toView.superview) ?? finalFrameRelativeToSuperview
@@ -342,8 +339,6 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
     }
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-        
-        let duration = transitionDuration(transitionContext)
         
         let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as! OpenDraftSelectorViewController
         let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
