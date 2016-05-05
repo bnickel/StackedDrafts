@@ -57,6 +57,7 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         fromView.frame = initialFrame
         
         UIView.animateWithDuration(duration, delay: 0, options: animationOptions, animations: {
+            fromView.endEditing(true)
             fromView.frame = finalFrame
         }, completion: { _ in
             
