@@ -13,7 +13,7 @@ import UIKit
     var draftTitle:String? { get }
 }
 
-class DraftPresentationController : UIPresentationController {
+public class DraftPresentationController : UIPresentationController {
     
     enum notifications : String {
         case didPresentDraftViewController = "DraftPresentationController.notifications.didPresentDraftViewController"
@@ -24,7 +24,7 @@ class DraftPresentationController : UIPresentationController {
         }
     }
     
-    var shouldMinimize:Bool = false
+    public var shouldMinimize:Bool = false
     var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil
     private lazy var interactiveDismissalGestureRecognizer:UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
     private var lastInteractionTimestamp:NSTimeInterval = 0
@@ -34,35 +34,36 @@ class DraftPresentationController : UIPresentationController {
     private lazy var headerOverlayView = OpenDraftHeaderOverlayView()
     var hasBeenPresented = false
     
-    override func presentedView() -> UIView? {
+    public override func presentedView() -> UIView? {
         return wrappingView
     }
     
-    override func frameOfPresentedViewInContainerView() -> CGRect {
+    public override func frameOfPresentedViewInContainerView() -> CGRect {
         let frame = super.frameOfPresentedViewInContainerView()
         return UIEdgeInsetsInsetRect(frame, DraftPresentationController.presentedInsets)
     }
     
-    override func presentationTransitionWillBegin() {
+    public override func presentationTransitionWillBegin() {
+        shouldMinimize = false
         configureViews()
         addPresentationScalingAnimation()
         addPresentationOverlayAnimations()
         addAccessibilityDismissView()
     }
     
-    override func dismissalTransitionWillBegin() {
+    public override func dismissalTransitionWillBegin() {
         notifyThatDismissalWillBeginIfNonInteractive()
         addDismissalScalingAnimation()
         addDismissalOverlayAnimations()
     }
     
-    override func presentationTransitionDidEnd(completed: Bool) {
+    public override func presentationTransitionDidEnd(completed: Bool) {
         attachInteractiveDismissalGestureRecognizer()
         notifyThatPresentationDidEndIfCompleted(completed)
         if completed { hasBeenPresented = true }
     }
     
-    override func containerViewWillLayoutSubviews() {
+    public override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         fixPresentingViewControllerBounds()
     }
@@ -162,7 +163,6 @@ extension DraftPresentationController {
             interactiveTransitioning?.completionSpeed = DraftDismissalAnimatedTransitioning.interactiveCompletionSpeed
             interactiveTransitioning?.cancelInteractiveTransition()
             interactiveTransitioning = nil
-            shouldMinimize = false
         case .Ended:
             interactiveTransitioning?.completionCurve = .EaseOut
             interactiveTransitioning?.completionSpeed = DraftDismissalAnimatedTransitioning.interactiveCompletionSpeed
@@ -172,7 +172,6 @@ extension DraftPresentationController {
                 interactiveTransitioning?.cancelInteractiveTransition()
             }
             interactiveTransitioning = nil
-            shouldMinimize = false
         default:
             break
         }
