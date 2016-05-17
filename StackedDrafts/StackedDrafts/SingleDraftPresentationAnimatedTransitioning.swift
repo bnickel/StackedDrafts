@@ -18,6 +18,8 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
         
         let duration = transitionDuration(transitionContext)
         
+        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
+        
         let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
         let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
         
@@ -29,12 +31,18 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
         var initialFrame = finalFrame
         initialFrame.origin.y = finalFrame.maxY - initialInset
         
+        let initialTransform = fromView.transform
+        let animationTransform = DraftPresentationController.presenterTransform(height: fromView.bounds.height)
+        
         transitionContext.containerView()?.addSubview(toView)
         toView.frame = initialFrame
         
         UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseOut, animations: {
+            fromView.transform = animationTransform
             toView.frame = finalFrame
         }, completion: { _ in
+            fromView.removeFromSuperview()
+            fromView.transform = initialTransform
             if transitionContext.transitionWasCancelled() {
                 toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
@@ -43,5 +51,4 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
             }
         })
     }
-
 }

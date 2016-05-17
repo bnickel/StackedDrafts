@@ -49,19 +49,31 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         let initialFrameRelativeToSuperview = transitionContext.initialFrameForViewController(fromViewController)
         let initialFrame = fromViewController.view.superview!.convertRect(initialFrameRelativeToSuperview, toView: fromView.superview)
         
+        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
+        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
+        
         let finalInset = fromViewController.draftPresentationController?.dismissalInset ?? 0
         
         var finalFrame = initialFrame
         finalFrame.origin.y = initialFrame.maxY - finalInset
         
+        
         fromView.frame = initialFrame
+        toView.frame = transitionContext.finalFrameForViewController(toViewController)
+        transitionContext.containerView()?.insertSubview(toView, atIndex: 0)
+        
+        let initialTransform = fromView.transform
+        let animationTransform = DraftPresentationController.presenterTransform(height: toView.bounds.height)
+        toView.transform = animationTransform
         
         UIView.animateWithDuration(duration, delay: 0, options: animationOptions, animations: {
             fromView.endEditing(true)
             fromView.frame = finalFrame
+            toView.transform = initialTransform
         }, completion: { _ in
-            
+            toView.transform = initialTransform
             if transitionContext.transitionWasCancelled() {
+                toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
             } else {
                 fromView.removeFromSuperview()

@@ -32,6 +32,8 @@ import UIKit
     private let wrappingView = UIView()
     private let accessibilityDismissalView = AccessibilityDismissalView()
     private lazy var headerOverlayView = OpenDraftHeaderOverlayView()
+    public lazy var simulatedPresentingView:UIView = DraftPresentationController.createSimulatedPresentingView()
+    
     var hasBeenPresented = false
     
     public override func presentedView() -> UIView? {
@@ -46,32 +48,47 @@ import UIKit
     public override func presentationTransitionWillBegin() {
         shouldMinimize = false
         configureViews()
-        addPresentationScalingAnimation()
         addPresentationOverlayAnimations()
         addAccessibilityDismissView()
     }
     
     public override func dismissalTransitionWillBegin() {
         notifyThatDismissalWillBeginIfNonInteractive()
-        addDismissalScalingAnimation()
+        removeSimulatedPresentingView()
         addDismissalOverlayAnimations()
     }
     
     public override func presentationTransitionDidEnd(completed: Bool) {
         attachInteractiveDismissalGestureRecognizer()
+        addSimulatedPresentingViewIfPresented(completed)
         notifyThatPresentationDidEndIfCompleted(completed)
         if completed { hasBeenPresented = true }
     }
     
-    public override func containerViewWillLayoutSubviews() {
-        super.containerViewWillLayoutSubviews()
-        fixPresentingViewControllerBounds()
+    public override func dismissalTransitionDidEnd(completed: Bool) {
+        addSimulatedPresentingViewIfPresented(!completed)
     }
     
-    static let presentedInsets = UIEdgeInsets(top: 40, left: 0, bottom: 0, right: 0)
+    public override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        layoutSimulatedPresentingView()
+        self.presentedView()?.frame = frameOfPresentedViewInContainerView()
+    }
     
-    class func presenterTransform(width width:CGFloat) -> CGAffineTransform {
-        let scale = (width - 30) / width
+    public override func shouldRemovePresentersView() -> Bool {
+        return true
+    }
+    
+    class var presentedInsets:UIEdgeInsets {
+        let application = UIApplication.sharedApplication()
+        let topInset:CGFloat = 20 + (application.statusBarHidden ? 0 : application.statusBarFrame.height)
+        return UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
+    }
+    
+    class func presenterTransform(height height:CGFloat) -> CGAffineTransform {
+        let topInset = presentedInsets.top
+        let heightReduction = 2 * topInset * 0.75
+        let scale = (height - heightReduction) / height
         return CGAffineTransformMakeScale(scale, scale)
     }
 }
@@ -82,36 +99,32 @@ public extension UIViewController {
     }
 }
 
-// MARK: - Scaling
+// MARK: - Simulated presenting view
 private extension DraftPresentationController {
     
-    func setScale(expanded expanded: Bool) {
-        if expanded {
-            presentingViewController.view.transform = DraftPresentationController.presenterTransform(width: presentingViewController.view.bounds.width)
-        } else {
-            presentingViewController.view.transform = CGAffineTransformIdentity
-        }
+    class func createSimulatedPresentingView() -> UIView {
+        let view = UIView()
+        view.backgroundColor = .whiteColor()
+        return view
     }
     
-    func addPresentationScalingAnimation() {
-        presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(containerView!, animation: { context in
-            self.setScale(expanded: true)
-            }, completion: { context in
-                self.setScale(expanded: !context.isCancelled())
-        })
+    func addSimulatedPresentingViewIfPresented(presented:Bool) {
+        guard let containerView = containerView where presented else { return }
+        containerView.insertSubview(simulatedPresentingView, atIndex: 0)
+        layoutSimulatedPresentingView()
     }
     
-    func addDismissalScalingAnimation() {
-        presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(presentingViewController.view, animation: { context in
-            self.setScale(expanded: false)
-            }, completion: { context in
-                self.setScale(expanded: context.isCancelled())
-        })
+    func removeSimulatedPresentingView() {
+        simulatedPresentingView.removeFromSuperview()
     }
     
-    func fixPresentingViewControllerBounds() {
-        guard let bounds = containerView?.bounds else { return }
-        presentingViewController.view.bounds = bounds
+    func layoutSimulatedPresentingView() {
+        
+        guard let containerView = containerView else { return }
+        let bounds = containerView.bounds
+        simulatedPresentingView.bounds = bounds
+        simulatedPresentingView.center = CGPoint(x: bounds.midX, y: bounds.midY)
+        simulatedPresentingView.transform = self.dynamicType.presenterTransform(height: bounds.height)
     }
 }
 
