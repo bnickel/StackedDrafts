@@ -10,7 +10,12 @@ import UIKit
 import StackedDrafts
 
 class PresentingViewController: UIViewController {
+    
     @IBAction func done(segue: UIStoryboardSegue) { }
+    
+    @IBAction func minimize(segue: UIStoryboardSegue) {
+        segue.sourceViewController.draftPresentationController?.shouldMinimize = true
+    }
     
     @IBAction func draftRequested() {
         OpenDraftsManager.sharedInstance.presentDraft(from: self, animated: true)

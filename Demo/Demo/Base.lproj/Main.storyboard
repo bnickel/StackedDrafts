@@ -58,13 +58,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zXN-ZP-3E1">
-                                <rect key="frame" x="273" y="307" width="54" height="30"/>
-                                <state key="normal" title="Dismiss"/>
-                                <connections>
-                                    <segue destination="SSM-og-J91" kind="unwind" identifier="unwind" unwindAction="done:" id="rhS-QN-loV"/>
-                                </connections>
-                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ina-jp-YnL">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <subviews>
@@ -83,15 +76,43 @@
                                     <constraint firstItem="s5Y-o8-Vpe" firstAttribute="centerX" secondItem="Ina-jp-YnL" secondAttribute="centerX" id="kYq-ov-rb3"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c7G-9G-fnF">
+                                <rect key="frame" x="218" y="285" width="165" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zXN-ZP-3E1">
+                                        <rect key="frame" x="0.0" y="0.0" width="54" height="30"/>
+                                        <state key="normal" title="Dismiss"/>
+                                        <connections>
+                                            <segue destination="SSM-og-J91" kind="unwind" identifier="unwind" unwindAction="done:" id="rhS-QN-loV"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PDl-Vi-ZOU">
+                                        <rect key="frame" x="104" y="0.0" width="61" height="30"/>
+                                        <state key="normal" title="Minimize"/>
+                                        <connections>
+                                            <segue destination="SSM-og-J91" kind="unwind" unwindAction="minimize:" id="Phj-Ev-JL8"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="zXN-ZP-3E1" firstAttribute="top" secondItem="c7G-9G-fnF" secondAttribute="top" id="O8K-Xw-p6D"/>
+                                    <constraint firstItem="zXN-ZP-3E1" firstAttribute="top" secondItem="c7G-9G-fnF" secondAttribute="top" id="QHc-Cx-0AA"/>
+                                    <constraint firstAttribute="bottom" secondItem="zXN-ZP-3E1" secondAttribute="bottom" id="Qep-bL-sbL"/>
+                                    <constraint firstItem="zXN-ZP-3E1" firstAttribute="leading" secondItem="c7G-9G-fnF" secondAttribute="leading" id="h5b-qk-jbt"/>
+                                    <constraint firstItem="PDl-Vi-ZOU" firstAttribute="leading" secondItem="zXN-ZP-3E1" secondAttribute="trailing" constant="50" id="iUA-0a-IME"/>
+                                    <constraint firstAttribute="trailing" secondItem="PDl-Vi-ZOU" secondAttribute="trailing" id="imf-Ya-VnD"/>
+                                    <constraint firstItem="PDl-Vi-ZOU" firstAttribute="baseline" secondItem="zXN-ZP-3E1" secondAttribute="baseline" id="oI8-Wk-PVy"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.80000001190000003" green="0.40000000600000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="zXN-ZP-3E1" firstAttribute="centerY" secondItem="IQe-uD-02r" secondAttribute="centerY" constant="22" id="3uB-30-KAx"/>
                             <constraint firstItem="Ina-jp-YnL" firstAttribute="leading" secondItem="IQe-uD-02r" secondAttribute="leading" id="Drb-QV-9bm"/>
+                            <constraint firstItem="c7G-9G-fnF" firstAttribute="centerY" secondItem="IQe-uD-02r" secondAttribute="centerY" id="EGq-G6-CfX"/>
                             <constraint firstItem="Ina-jp-YnL" firstAttribute="top" secondItem="IQe-uD-02r" secondAttribute="top" id="ZZJ-jr-QoA"/>
                             <constraint firstAttribute="trailing" secondItem="Ina-jp-YnL" secondAttribute="trailing" id="ehF-lI-bsO"/>
-                            <constraint firstItem="zXN-ZP-3E1" firstAttribute="centerX" secondItem="IQe-uD-02r" secondAttribute="centerX" id="zI5-Id-uDl"/>
+                            <constraint firstItem="c7G-9G-fnF" firstAttribute="centerX" secondItem="IQe-uD-02r" secondAttribute="centerX" id="z3v-m3-oQz"/>
                         </constraints>
                     </view>
                     <connections>
