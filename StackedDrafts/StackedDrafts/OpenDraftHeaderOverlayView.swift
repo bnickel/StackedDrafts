@@ -11,6 +11,7 @@ import UIKit
 @IBDesignable
 class OpenDraftHeaderOverlayView: UIView {
     
+    private var extraBackgroundView = UIView()
     @IBOutlet private var contentView: UIView?
     @IBOutlet private var label: UILabel?
     
@@ -40,9 +41,26 @@ class OpenDraftHeaderOverlayView: UIView {
         UINib(nibName: "OpenDraftHeaderOverlayView.contentView", bundle: NSBundle(forClass: OpenDraftsIndicatorView.self)).instantiateWithOwner(self, options: nil)
         guard let contentView = contentView, let label = label else { preconditionFailure() }
         contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        extraBackgroundView.backgroundColor = .whiteColor()
+        
+        addSubview(extraBackgroundView)
         addSubview(contentView)
+        
+        extraBackgroundView.constrainToSuperviewEdges()
         contentView.constrainToSuperviewEdges()
         label.text = labelText
+    }
+    
+    var extraSpecialAlpha:CGFloat {
+        get {
+            return extraBackgroundView.alpha
+        }
+        set {
+            extraBackgroundView.alpha = newValue
+            contentView?.alpha = newValue
+            label?.alpha = newValue
+        }
     }
     
     @IBInspectable

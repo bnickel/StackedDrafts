@@ -239,9 +239,9 @@ private extension DraftPresentationController {
     func addPresentationOverlayAnimations() {
         addHeaderOverlayIfNeeded()
         
-        headerOverlayView.alpha = 1
+        headerOverlayView.extraSpecialAlpha = 1
         presentingViewController.transitionCoordinator()?.animateAlongsideTransition({ context in
-            self.headerOverlayView.alpha = 0
+            self.headerOverlayView.extraSpecialAlpha = 0
         }, completion: { context in
             self.headerOverlayView.removeFromSuperview()
         })
@@ -253,9 +253,9 @@ private extension DraftPresentationController {
             addHeaderOverlayIfNeeded()
         }
         
-        headerOverlayView.alpha = 0
+        headerOverlayView.extraSpecialAlpha = 0
         presentingViewController.transitionCoordinator()?.animateAlongsideTransition({ context in
-            self.headerOverlayView.alpha = 1
+            self.headerOverlayView.extraSpecialAlpha = 1
         }, completion: { context in
             self.headerOverlayView.removeFromSuperview()
         })
