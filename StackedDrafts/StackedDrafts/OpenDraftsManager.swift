@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class OpenDraftsManager : NSObject {
+@objc(SEUIOpenDraftsManager) public class OpenDraftsManager : NSObject {
     
     public static let sharedInstance:OpenDraftsManager = {
         let manager = OpenDraftsManager()

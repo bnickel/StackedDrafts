@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class DraftTransitioningDelegate : NSObject, UIViewControllerTransitioningDelegate {
+@objc(SEUIDraftTransitioningDelegate) public class DraftTransitioningDelegate : NSObject, UIViewControllerTransitioningDelegate {
     
     public static let sharedInstance = DraftTransitioningDelegate()
     

@@ -8,12 +8,12 @@
 
 import UIKit
 
-@objc public protocol DraftViewControllerProtocol : NSObjectProtocol {
+@objc(SEUIDraftViewControllerProtocol) public protocol DraftViewControllerProtocol : NSObjectProtocol {
     var draggableView:UIView? { get }
     var draftTitle:String? { get }
 }
 
-public class DraftPresentationController : UIPresentationController {
+@objc(SEDraftPresentationController) public class DraftPresentationController : UIPresentationController {
     
     enum notifications : String {
         case didPresentDraftViewController = "DraftPresentationController.notifications.didPresentDraftViewController"
@@ -76,8 +76,8 @@ public class DraftPresentationController : UIPresentationController {
     }
 }
 
-extension UIViewController {
-    var draftPresentationController:DraftPresentationController? {
+public extension UIViewController {
+    @objc(SEUI_draftPresentationController) var draftPresentationController:DraftPresentationController? {
         return presentationController as? DraftPresentationController
     }
 }
