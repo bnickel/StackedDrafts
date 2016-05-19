@@ -8,6 +8,13 @@
 
 import UIKit
 
+/**
+ This control indicates the number of open drafts managed by `OpenDraftsManager.sharedInstance`, automatically updating its appearance.
+ 
+ This view should be placed at the bottom of the screen as the draft presentation and dismissal animations are based on its appearance at that location.  By default, there are no actions wired to this control, but a touch up event should be used to present the view from its parent view controller.
+ 
+ - Note: This view has a required height constraint that changes based on whether or not there are any open draft view controllers.  Other views should be positioned relative to its top.
+ */
 @IBDesignable
 public class OpenDraftsIndicatorView: UIControl {
     

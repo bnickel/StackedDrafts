@@ -108,7 +108,7 @@ private extension DraftPresentationController {
         guard let containerView = containerView where presented else { return }
         guard let delegate = presentedViewController.transitioningDelegate as? DraftTransitioningDelegate else { return }
         
-        let simulatedPresentingView = delegate.simulatedPresentingView(presentingViewController: presentingViewController)
+        let simulatedPresentingView = delegate.simulatedPresentingView(for: presentingViewController)
         
         containerView.insertSubview(simulatedPresentingView, atIndex: 0)
         self.simulatedPresentingView = simulatedPresentingView

@@ -8,6 +8,11 @@
 
 import UIKit
 
+/**
+ This singleton class keeps track of all view controllers conforming to `DraftViewControllerProtocol` that are either presented or minimized.  When a change is observed in automatically updates the appearance of all instances of `OpenDraftsIndicatorViews`.
+ 
+ - Note: This singleton is eligible for state restoration.  Because it can contain multiple detached view controllers, it is important that each draft view controller have a unique restoration identifier such as a UUID.
+ */
 @objc(SEUIOpenDraftsManager) public class OpenDraftsManager : NSObject {
     
     public static let sharedInstance:OpenDraftsManager = {
@@ -30,6 +35,7 @@ import UIKit
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
+    /// All instances of `DraftViewControllerProtocol` either presented or minimized.
     private(set) public var openDraftingViewControllers:[DraftViewControllerProtocol] = [] { didSet { notify() } }
     
     private func notify() {
@@ -46,6 +52,16 @@ import UIKit
         remove(viewController)
     }
     
+    /**
+     Presents the open draft view controller or controllers from a source view controller.
+     
+     If a single draft view controller is open and minimized, it will be presented directly.  If multiple draft view controllers are minimized, a draft picker view controller will be presented, allowing the user to select any draft or dismiss and return to the presenting view controller.  If there are no view controllers to present, the fuction fails without error.
+     
+     - Parameters:
+       - from: The presenting view controller.
+       - animated: Whether to animate the transition.
+       - completion: An optional callback notifying when the presentation has completed.
+     */
     public func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
         if self.openDraftingViewControllers.count > 1 {
             let viewController = OpenDraftSelectorViewController()
@@ -61,7 +77,7 @@ import UIKit
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController }) + [viewController]
     }
     
-    func remove(viewController:DraftViewControllerProtocol) {
+    public func remove(viewController:DraftViewControllerProtocol) {
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController })
     }
 }
