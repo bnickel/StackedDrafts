@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="by0-Ml-o0A">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -32,7 +32,7 @@
                                 </connections>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="pOY-1e-Nbc" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="DuU-CS-skf"/>
                             <constraint firstItem="HPB-nz-je3" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="gRv-et-zA5"/>
@@ -41,6 +41,7 @@
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="pOY-1e-Nbc" secondAttribute="bottom" id="tfW-6L-fy2"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="zsz-de-oLx"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -123,6 +124,23 @@
                 <exit id="SSM-og-J91" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="1228" y="429"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="9Ux-IW-GuF">
+            <objects>
+                <navigationController storyboardIdentifier="nav" useStoryboardIdentifierAsRestorationIdentifier="YES" id="by0-Ml-o0A" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="4iK-8G-jsb">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="iQT-WU-XYk"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NGd-Xd-Ve8" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-317" y="429"/>
         </scene>
     </scenes>
 </document>

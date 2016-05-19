@@ -11,6 +11,8 @@ import StackedDrafts
 
 class DraftViewController: UIViewController, DraftViewControllerProtocol {
     
+    static let sharedDelegate = DraftTransitioningDelegate()
+    
     @IBOutlet var draggableView: UIView?
     
     static var count = 0
@@ -22,7 +24,7 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
         super.awakeFromNib()
         restorationIdentifier = NSUUID().UUIDString
         restorationClass = DraftViewController.self
-        transitioningDelegate = DraftTransitioningDelegate.sharedInstance
+        transitioningDelegate = DraftViewController.sharedDelegate
         modalPresentationStyle = .Custom
     }
     

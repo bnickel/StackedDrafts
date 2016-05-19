@@ -13,7 +13,7 @@ import UIKit
     var draftTitle:String? { get }
 }
 
-@objc(SEDraftPresentationController) public class DraftPresentationController : UIPresentationController {
+@objc(SEUIDraftPresentationController) public class DraftPresentationController : UIPresentationController {
     
     enum notifications : String {
         case didPresentDraftViewController = "DraftPresentationController.notifications.didPresentDraftViewController"
@@ -32,7 +32,7 @@ import UIKit
     private let wrappingView = UIView()
     private let accessibilityDismissalView = AccessibilityDismissalView()
     private lazy var headerOverlayView = OpenDraftHeaderOverlayView()
-    public lazy var simulatedPresentingView:UIView = DraftPresentationController.createSimulatedPresentingView()
+    private var simulatedPresentingView:UIView?
     
     var hasBeenPresented = false
     
@@ -102,25 +102,25 @@ public extension UIViewController {
 // MARK: - Simulated presenting view
 private extension DraftPresentationController {
     
-    class func createSimulatedPresentingView() -> UIView {
-        let view = UIView()
-        view.backgroundColor = .whiteColor()
-        return view
-    }
-    
     func addSimulatedPresentingViewIfPresented(presented:Bool) {
+        removeSimulatedPresentingView()
+        
         guard let containerView = containerView where presented else { return }
+        guard let delegate = presentedViewController.transitioningDelegate as? DraftTransitioningDelegate else { return }
+        
+        let simulatedPresentingView = delegate.simulatedPresentingView(presentingViewController: presentingViewController)
+        
         containerView.insertSubview(simulatedPresentingView, atIndex: 0)
+        self.simulatedPresentingView = simulatedPresentingView
         layoutSimulatedPresentingView()
     }
     
     func removeSimulatedPresentingView() {
-        simulatedPresentingView.removeFromSuperview()
+        simulatedPresentingView?.removeFromSuperview()
     }
     
     func layoutSimulatedPresentingView() {
-        
-        guard let containerView = containerView else { return }
+        guard let containerView = containerView, let simulatedPresentingView = simulatedPresentingView else { return }
         let bounds = containerView.bounds
         simulatedPresentingView.bounds = bounds
         simulatedPresentingView.center = CGPoint(x: bounds.midX, y: bounds.midY)
