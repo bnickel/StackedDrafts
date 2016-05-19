@@ -60,6 +60,7 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         
         fromView.frame = initialFrame
         toView.frame = transitionContext.finalFrameForViewController(toViewController)
+        toView.layoutIfNeeded()
         transitionContext.containerView()?.insertSubview(toView, atIndex: 0)
         
         let initialTransform = fromView.transform
