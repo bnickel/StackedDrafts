@@ -66,6 +66,7 @@ import UIKit
     }
     
     public override func dismissalTransitionDidEnd(completed: Bool) {
+        if !completed { shouldMinimize = false }
         addSimulatedPresentingViewIfPresented(!completed)
     }
     
