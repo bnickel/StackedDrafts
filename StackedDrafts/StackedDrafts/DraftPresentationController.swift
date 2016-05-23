@@ -76,20 +76,34 @@ import UIKit
     }
     
     public override func shouldRemovePresentersView() -> Bool {
-        return true
+        return DraftPresentationController.isPhone
     }
+    
+    private static let isPhone = UIDevice.currentDevice().userInterfaceIdiom == .Phone
     
     class var presentedInsets:UIEdgeInsets {
         let application = UIApplication.sharedApplication()
-        let topInset:CGFloat = 20 + (application.statusBarHidden ? 0 : application.statusBarFrame.height)
+        let statusBarHeight = application.statusBarHidden ? 0 : application.statusBarFrame.height
+        let topInset:CGFloat
+        
+        if isPhone {
+            topInset = 20 + statusBarHeight
+        } else {
+            topInset = 22 + statusBarHeight
+        }
+        
         return UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
     }
     
     class func presenterTransform(height height:CGFloat) -> CGAffineTransform {
-        let topInset = presentedInsets.top
-        let heightReduction = 2 * topInset * 0.75
-        let scale = (height - heightReduction) / height
-        return CGAffineTransformMakeScale(scale, scale)
+        if isPhone {
+            let topInset = presentedInsets.top
+            let heightReduction = 2 * topInset * 0.75
+            let scale = (height - heightReduction) / height
+            return CGAffineTransformMakeScale(scale, scale)
+        } else {
+            return CGAffineTransformIdentity
+        }
     }
 }
 
@@ -105,6 +119,7 @@ private extension DraftPresentationController {
     func addSimulatedPresentingViewIfPresented(presented:Bool) {
         removeSimulatedPresentingView()
         
+        guard shouldRemovePresentersView() else { return }
         guard let containerView = containerView where presented else { return }
         guard let delegate = presentedViewController.transitioningDelegate as? DraftTransitioningDelegate else { return }
         

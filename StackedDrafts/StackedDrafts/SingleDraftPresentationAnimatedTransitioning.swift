@@ -18,10 +18,12 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
         
         let duration = transitionDuration(transitionContext)
         
-        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
+        let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
+        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey) ?? fromViewController.view!
         
         let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
         let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
+        let ownsFromView = toViewController.presentationController?.shouldRemovePresentersView() ?? false
         
         let finalFrameRelativeToSuperview = transitionContext.finalFrameForViewController(toViewController)
         let finalFrame = toViewController.view.superview!.convertRect(finalFrameRelativeToSuperview, toView: toView.superview)
@@ -41,12 +43,14 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
             fromView.transform = animationTransform
             toView.frame = finalFrame
         }, completion: { _ in
-            fromView.removeFromSuperview()
             fromView.transform = initialTransform
             if transitionContext.transitionWasCancelled() {
                 toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
             } else {
+                if ownsFromView {
+                    fromView.removeFromSuperview()
+                }
                 transitionContext.completeTransition(true)
             }
         })
