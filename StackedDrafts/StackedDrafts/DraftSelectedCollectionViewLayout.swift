@@ -29,6 +29,7 @@ class DraftSelectedCollectionViewLayout: UICollectionViewLayout {
         presenterAttributes.frame = CGRect(origin: CGPointZero, size: size)
         presenterAttributes.zIndex = 0
         presenterAttributes.transform = DraftPresentationController.presenterTransform(height: size.height)
+        presenterAttributes.alpha = DraftPresentationController.presenterAlpha
         
         var allAttributes = [presenterAttributes]
         

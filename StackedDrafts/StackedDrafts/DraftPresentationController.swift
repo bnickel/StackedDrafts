@@ -49,6 +49,7 @@ import UIKit
         shouldMinimize = false
         configureViews()
         addPresentationOverlayAnimations()
+        addPresentationAlphaAnimations()
         addAccessibilityDismissView()
     }
     
@@ -56,6 +57,7 @@ import UIKit
         notifyThatDismissalWillBeginIfNonInteractive()
         removeSimulatedPresentingView()
         addDismissalOverlayAnimations()
+        addDismissalAlphaAnimations()
     }
     
     public override func presentationTransitionDidEnd(completed: Bool) {
@@ -106,6 +108,8 @@ import UIKit
             return CGAffineTransformIdentity
         }
     }
+    
+    class var presenterAlpha:CGFloat { return 0.7 }
 }
 
 public extension UIViewController {
@@ -141,6 +145,7 @@ private extension DraftPresentationController {
         simulatedPresentingView.bounds = bounds
         simulatedPresentingView.center = CGPoint(x: bounds.midX, y: bounds.midY)
         simulatedPresentingView.transform = self.dynamicType.presenterTransform(height: bounds.height)
+        simulatedPresentingView.alpha = self.dynamicType.presenterAlpha
     }
 }
 
@@ -214,6 +219,27 @@ extension DraftPresentationController {
     var dismissalInset:CGFloat {
         guard shouldMinimize && presentedViewController is DraftViewControllerProtocol else { return 0 }
         return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
+    }
+}
+
+// MARK: - Alpha
+
+private extension DraftPresentationController {
+    
+    func addPresentationAlphaAnimations() {
+        addAlphaAnimations(initial: 1, final: self.dynamicType.presenterAlpha)
+    }
+    
+    func addDismissalAlphaAnimations() {
+        addAlphaAnimations(initial: self.dynamicType.presenterAlpha, final: 1)
+    }
+    
+    func addAlphaAnimations(initial initialAlpha:CGFloat, final finalAlpha:CGFloat) {
+        let view = presentingViewController.view
+        view.alpha = initialAlpha
+        presentingViewController.transitionCoordinator()?.animateAlongsideTransitionInView(view, animation: { context in
+            view.alpha = finalAlpha
+        }, completion: nil)
     }
 }
 
