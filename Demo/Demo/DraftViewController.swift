@@ -14,6 +14,7 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
     static let sharedDelegate = DraftTransitioningDelegate()
     
     @IBOutlet var draggableView: UIView?
+    @IBOutlet var textField: UITextField!
     
     static var count = 0
     static func getIndex() -> Int { count += 1; return count }
@@ -26,6 +27,13 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
         restorationClass = DraftViewController.self
         transitioningDelegate = DraftViewController.sharedDelegate
         modalPresentationStyle = .Custom
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let orangeView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 10))
+        orangeView.backgroundColor = .orangeColor()
+        textField.inputAccessoryView = orangeView
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {

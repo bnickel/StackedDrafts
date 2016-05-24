@@ -189,6 +189,9 @@ extension DraftPresentationController {
             lastInteractionTimestamp = now
             shouldMinimize = true
             interactiveTransitioning = UIPercentDrivenInteractiveTransition()
+            UIView.performWithoutAnimation({ 
+                self.presentedViewController.view.endEditing(true)
+            })
             presentingViewController.dismissViewControllerAnimated(true, completion: nil)
         case .Changed:
             lastInteractionTimestamp = now

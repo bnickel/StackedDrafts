@@ -24,7 +24,7 @@
                                     <segue destination="axL-Te-eJU" kind="presentation" id="Ka3-3P-7jC"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pOY-1e-Nbc" customClass="OpenDraftsIndicatorView" customModule="StackedDrafts">
+                            <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pOY-1e-Nbc" customClass="OpenDraftsIndicatorView" customModule="StackedDrafts">
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
@@ -77,8 +77,18 @@
                                     <constraint firstItem="s5Y-o8-Vpe" firstAttribute="centerX" secondItem="Ina-jp-YnL" secondAttribute="centerX" id="kYq-ov-rb3"/>
                                 </constraints>
                             </view>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TKE-CS-ezZ">
+                                <rect key="frame" x="200" y="52" width="200" height="30"/>
+                                <color key="backgroundColor" red="0.84294247627258301" green="0.54331797361373901" blue="0.99920248985290527" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="8Ku-LI-hZA"/>
+                                </constraints>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c7G-9G-fnF">
-                                <rect key="frame" x="218" y="285" width="165" height="30"/>
+                                <rect key="frame" x="218" y="90" width="165" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zXN-ZP-3E1">
                                         <rect key="frame" x="0.0" y="0.0" width="54" height="30"/>
@@ -109,15 +119,18 @@
                         <color key="backgroundColor" red="0.80000001190000003" green="0.40000000600000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="TKE-CS-ezZ" firstAttribute="top" secondItem="Ina-jp-YnL" secondAttribute="bottom" constant="8" symbolic="YES" id="8Fg-oz-jh2"/>
                             <constraint firstItem="Ina-jp-YnL" firstAttribute="leading" secondItem="IQe-uD-02r" secondAttribute="leading" id="Drb-QV-9bm"/>
-                            <constraint firstItem="c7G-9G-fnF" firstAttribute="centerY" secondItem="IQe-uD-02r" secondAttribute="centerY" id="EGq-G6-CfX"/>
                             <constraint firstItem="Ina-jp-YnL" firstAttribute="top" secondItem="IQe-uD-02r" secondAttribute="top" id="ZZJ-jr-QoA"/>
                             <constraint firstAttribute="trailing" secondItem="Ina-jp-YnL" secondAttribute="trailing" id="ehF-lI-bsO"/>
+                            <constraint firstItem="TKE-CS-ezZ" firstAttribute="centerX" secondItem="IQe-uD-02r" secondAttribute="centerX" id="rEZ-Jv-aC6"/>
+                            <constraint firstItem="c7G-9G-fnF" firstAttribute="top" secondItem="TKE-CS-ezZ" secondAttribute="bottom" constant="8" symbolic="YES" id="wow-xU-trU"/>
                             <constraint firstItem="c7G-9G-fnF" firstAttribute="centerX" secondItem="IQe-uD-02r" secondAttribute="centerX" id="z3v-m3-oQz"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="draggableView" destination="Ina-jp-YnL" id="9p1-oH-Zew"/>
+                        <outlet property="textField" destination="TKE-CS-ezZ" id="HUi-WN-S2N"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eCb-BQ-wo1" userLabel="First Responder" sceneMemberID="firstResponder"/>
