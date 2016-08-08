@@ -102,8 +102,6 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    // This is just lazy right here but want to ship.
-    // TODO: Don't be lazy.
     func updateAccessibilityElements() {
         previewContainerView.isAccessibilityElement = true
         previewContainerView.accessibilityTraits = UIAccessibilityTraitButton
