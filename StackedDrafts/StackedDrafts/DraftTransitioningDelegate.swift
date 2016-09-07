@@ -16,7 +16,7 @@ import UIKit
  */
 @objc(SEUIDraftTransitioningDelegate) public class DraftTransitioningDelegate : NSObject, UIViewControllerTransitioningDelegate {
     
-    public func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController, sourceViewController source: UIViewController) -> UIPresentationController? {
+    public func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController?, sourceViewController source: UIViewController) -> UIPresentationController? {
         return DraftPresentationController(presentedViewController: presented, presentingViewController: presenting)
     }
     

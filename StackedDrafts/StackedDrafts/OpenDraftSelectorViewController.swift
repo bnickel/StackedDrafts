@@ -76,7 +76,7 @@ class OpenDraftSelectorViewController: UIViewController {
         guard let viewController = draftViewController as? UIViewController else { preconditionFailure() }
         viewController.view.frame = UIEdgeInsetsInsetRect(view.bounds, DraftPresentationController.presentedInsets)
         viewController.view.layoutIfNeeded()
-        return viewController.view.snapshotViewAfterScreenUpdates(true)
+        return viewController.view.snapshotViewAfterScreenUpdates(true)!
     }
     
     var snapshots:[UIView?]? = nil
@@ -270,12 +270,12 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         
         guard let presentingViewController = presentingViewController, let window = view.window else { return }
         let snapshot = view.snapshotViewAfterScreenUpdates(true)
-        window.addSubview(snapshot)
+        window.addSubview(snapshot!)
         
         presentingViewController.dismissViewControllerAnimated(false, completion: nil)
         presentingViewController.presentViewController(viewController, animated: false, completion: {
             dispatch_async(dispatch_get_main_queue(), {
-                snapshot.removeFromSuperview()
+                snapshot!.removeFromSuperview()
             })
         })
     }
@@ -306,7 +306,7 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
         let finalFrameRelativeToSuperview = transitionContext.finalFrameForViewController(toViewController)
         let finalFrame = toViewController.view.superview?.convertRect(finalFrameRelativeToSuperview, toView: toView.superview) ?? finalFrameRelativeToSuperview
         
-        transitionContext.containerView()?.addSubview(toView)
+        transitionContext.containerView().addSubview(toView)
         toView.frame = finalFrame
         toView.layoutIfNeeded()
         toViewController.source = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)
@@ -353,7 +353,7 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
         
         let finalFrameForPresenter = transitionContext.finalFrameForViewController(toViewController)
         
-        transitionContext.containerView()?.addSubview(fromView)
+        transitionContext.containerView().addSubview(fromView)
         fromView.frame = initialFrame
         fromView.layoutIfNeeded()
         

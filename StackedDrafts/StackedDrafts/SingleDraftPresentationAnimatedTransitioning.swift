@@ -36,7 +36,7 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
         let initialTransform = fromView.transform
         let animationTransform = DraftPresentationController.presenterTransform(height: fromView.bounds.height)
         
-        transitionContext.containerView()?.addSubview(toView)
+        transitionContext.containerView().addSubview(toView)
         toView.frame = initialFrame
         
         UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseOut, animations: {
