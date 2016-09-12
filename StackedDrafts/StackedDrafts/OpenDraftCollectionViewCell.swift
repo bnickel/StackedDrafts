@@ -11,7 +11,7 @@ import UIKit
 @IBDesignable
 class GradientView: UIView {
     
-    override class func layerClass() -> AnyClass {
+    override class var layerClass : AnyClass {
         return CAGradientLayer.self
     }
     
@@ -30,15 +30,15 @@ class GradientView: UIView {
     }
     
     func configure() {
-        (layer as! CAGradientLayer).colors = [UIColor.blackColor().colorWithAlphaComponent(0), UIColor.blackColor().colorWithAlphaComponent(0.5)].map({ $0.CGColor })
+        (layer as! CAGradientLayer).colors = [UIColor.black.withAlphaComponent(0), UIColor.black.withAlphaComponent(0.5)].map({ $0.cgColor })
     }
 }
 
 class OpenDraftCollectionViewCell: UICollectionViewCell {
 
-    @IBOutlet private var previewContainerView: UIView!
-    @IBOutlet private var closeButton: UIButton!
-    @IBOutlet private var headerView: OpenDraftHeaderOverlayView!
+    @IBOutlet fileprivate var previewContainerView: UIView!
+    @IBOutlet fileprivate var closeButton: UIButton!
+    @IBOutlet fileprivate var headerView: OpenDraftHeaderOverlayView!
     @IBOutlet var gradientView: GradientView!
     
     override func awakeFromNib() {
@@ -48,18 +48,18 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
     
     var closeTapped:((OpenDraftCollectionViewCell) -> Void)?
 
-    @IBAction private func closeButtonTapped() {
+    @IBAction fileprivate func closeButtonTapped() {
         closeTapped?(self)
     }
     
-    private static let reuseIdentifier = "OpenDraftCollectionViewCell"
+    fileprivate static let reuseIdentifier = "OpenDraftCollectionViewCell"
     
     class func register(with collectionView: UICollectionView) {
-        collectionView.registerNib(UINib(nibName: "OpenDraftCollectionViewCell", bundle: NSBundle(forClass: self)), forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.register(UINib(nibName: "OpenDraftCollectionViewCell", bundle: Bundle(for: self)), forCellWithReuseIdentifier: reuseIdentifier)
     }
     
-    class func cell(at indexPath:NSIndexPath, collectionView: UICollectionView) -> OpenDraftCollectionViewCell {
-        return collectionView.dequeueReusableCellWithReuseIdentifier(OpenDraftCollectionViewCell.reuseIdentifier, forIndexPath: indexPath) as! OpenDraftCollectionViewCell
+    class func cell(at indexPath:IndexPath, collectionView: UICollectionView) -> OpenDraftCollectionViewCell {
+        return collectionView.dequeueReusableCell(withReuseIdentifier: OpenDraftCollectionViewCell.reuseIdentifier, for: indexPath) as! OpenDraftCollectionViewCell
     }
     
     var snapshotView:UIView? {
@@ -67,8 +67,8 @@ class OpenDraftCollectionViewCell: UICollectionViewCell {
             previewContainerView.subviews.last?.removeFromSuperview()
             if let snapshotView = snapshotView {
                 snapshotView.translatesAutoresizingMaskIntoConstraints = true
-                snapshotView.autoresizingMask = [.FlexibleRightMargin, .FlexibleBottomMargin]
-                snapshotView.frame.origin = CGPointZero
+                snapshotView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
+                snapshotView.frame.origin = CGPoint.zero
                 previewContainerView.addSubview(snapshotView)
             }
         }

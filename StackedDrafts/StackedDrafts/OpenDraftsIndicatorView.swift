@@ -16,17 +16,17 @@ import UIKit
  - Note: This view has a required height constraint that changes based on whether or not there are any open draft view controllers.  Other views should be positioned relative to its top.
  */
 @IBDesignable
-public class OpenDraftsIndicatorView: UIControl {
+open class OpenDraftsIndicatorView: UIControl {
     
-    @IBOutlet private var contentView: UIView!
-    @IBOutlet private var mostRecentDraftTopConstraint: NSLayoutConstraint!
-    @IBOutlet private var mostRecentDraftView: OpenDraftHeaderOverlayView!
-    @IBOutlet private var secondDraftView: UIView!
-    @IBOutlet private var thirdDraftView: UIView!
+    @IBOutlet fileprivate var contentView: UIView!
+    @IBOutlet fileprivate var mostRecentDraftTopConstraint: NSLayoutConstraint!
+    @IBOutlet fileprivate var mostRecentDraftView: OpenDraftHeaderOverlayView!
+    @IBOutlet fileprivate var secondDraftView: UIView!
+    @IBOutlet fileprivate var thirdDraftView: UIView!
     
-    private static let displayedHeight:CGFloat = 44
-    private var heightConstraint:NSLayoutConstraint!
-    private var intrinsicHeight:CGFloat = 0 { didSet { heightConstraint.constant = intrinsicHeight } }
+    fileprivate static let displayedHeight:CGFloat = 44
+    fileprivate var heightConstraint:NSLayoutConstraint!
+    fileprivate var intrinsicHeight:CGFloat = 0 { didSet { heightConstraint.constant = intrinsicHeight } }
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -34,62 +34,62 @@ public class OpenDraftsIndicatorView: UIControl {
     }
     
     convenience public init() {
-        self.init(frame: CGRectZero)
+        self.init(frame: .zero)
     }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    public override func awakeFromNib() {
+    open override func awakeFromNib() {
         super.awakeFromNib()
         loadContentView()
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    private func loadContentView() {
-        UINib(nibName: "OpenDraftsIndicatorView.contentView", bundle: NSBundle(forClass: OpenDraftsIndicatorView.self)).instantiateWithOwner(self, options: nil)
+    fileprivate func loadContentView() {
+        UINib(nibName: "OpenDraftsIndicatorView.contentView", bundle: Bundle(for: OpenDraftsIndicatorView.self)).instantiate(withOwner: self, options: nil)
         
-        heightConstraint = attr(self, .Height) == intrinsicHeight
+        heightConstraint = attr(self, .height) == intrinsicHeight
         
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
-        NSLayoutConstraint.activateConstraints([
-            attr(contentView, .Leading) == attr(self, .Leading),
-            attr(contentView, .Trailing) == attr(self, .Trailing),
-            attr(contentView, .Top) == attr(self, .Top),
-            attr(contentView, .Height) == OpenDraftsIndicatorView.displayedHeight,
+        NSLayoutConstraint.activate([
+            attr(contentView, .leading) == attr(self, .leading),
+            attr(contentView, .trailing) == attr(self, .trailing),
+            attr(contentView, .top) == attr(self, .top),
+            attr(contentView, .height) == OpenDraftsIndicatorView.displayedHeight,
             heightConstraint
         ])
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(didUpdateOpenDraftingControllers(_:)), name: OpenDraftsManager.notifications.didUpdateOpenDraftingControllers.rawValue, object: OpenDraftsManager.sharedInstance)
+        NotificationCenter.default.addObserver(self, selector: #selector(didUpdateOpenDraftingControllers(_:)), name: OpenDraftsManager.notifications.didUpdateOpenDraftingControllers, object: OpenDraftsManager.sharedInstance)
     }
     
-    override public var accessibilityLabel: String? {
+    override open var accessibilityLabel: String? {
         set(value) { super.accessibilityLabel = value }
         get { return super.accessibilityLabel ?? customAccessibilityLabel }
     }
     
-    override public var accessibilityHint: String? {
+    override open var accessibilityHint: String? {
         set(value) { super.accessibilityHint = value }
         get { return super.accessibilityHint ?? customAccessibilityHint }
     }
     
-    private var customAccessibilityLabel:String? = nil
-    private var customAccessibilityHint:String? = nil
+    fileprivate var customAccessibilityLabel:String? = nil
+    fileprivate var customAccessibilityHint:String? = nil
     
-    @objc private func didUpdateOpenDraftingControllers(_: NSNotification?) {
+    @objc fileprivate func didUpdateOpenDraftingControllers(_: Notification?) {
         let openDrafts = OpenDraftsManager.sharedInstance.openDraftingViewControllers
         setMostRecentDraftTitle(openDrafts.last?.draftTitle, numberOfOpenDrafts: openDrafts.count)
     }
     
-    private func setMostRecentDraftTitle(mostRecentDraftTitle:String?, numberOfOpenDrafts:Int) {
+    fileprivate func setMostRecentDraftTitle(_ mostRecentDraftTitle:String?, numberOfOpenDrafts:Int) {
         mostRecentDraftView.labelText = mostRecentDraftTitle
-        secondDraftView.hidden = numberOfOpenDrafts < 2
-        thirdDraftView.hidden = numberOfOpenDrafts < 3
+        secondDraftView.isHidden = numberOfOpenDrafts < 2
+        thirdDraftView.isHidden = numberOfOpenDrafts < 3
         mostRecentDraftTopConstraint.constant = CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
         intrinsicHeight = numberOfOpenDrafts > 0 ? OpenDraftsIndicatorView.displayedHeight : 0
         
@@ -99,28 +99,28 @@ public class OpenDraftsIndicatorView: UIControl {
             customAccessibilityHint = nil
         case 1:
             customAccessibilityLabel = NSLocalizedString("One minimized draft: {title}", comment: "Accessibility")
-                .stringByReplacingOccurrencesOfString("{title}", withString: mostRecentDraftTitle ?? "Unknown")
+                .replacingOccurrences(of: "{title}", with: mostRecentDraftTitle ?? "Unknown")
             customAccessibilityHint = NSLocalizedString("Double tap to open", comment: "Accessibility")
         default:
             customAccessibilityLabel = NSLocalizedString("{count} minimized drafts. Most recent: {title}", comment: "Accessibility")
-                .stringByReplacingOccurrencesOfString("{count}", withString: NSNumberFormatter().stringFromNumber(numberOfOpenDrafts) ?? String(numberOfOpenDrafts))
-                .stringByReplacingOccurrencesOfString("{title}", withString: mostRecentDraftTitle ?? "Unknown")
+                .replacingOccurrences(of: "{count}", with: NumberFormatter().string(from: NSNumber(value: numberOfOpenDrafts)) ?? String(numberOfOpenDrafts))
+                .replacingOccurrences(of: "{title}", with: mostRecentDraftTitle ?? "Unknown")
             customAccessibilityHint = NSLocalizedString("Double tap to select", comment: "Accessibility")
         }
         
         isAccessibilityElement = true
     }
     
-    public override func prepareForInterfaceBuilder() {
+    open override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         setMostRecentDraftTitle("Able was I, ere I saw Elba", numberOfOpenDrafts: 2)
     }
     
-    public override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
-        return pointInside(point, withEvent: event) ? self : nil
+    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        return self.point(inside: point, with: event) ? self : nil
     }
     
-    class func visibleHeaderHeight(numberOfOpenDrafts numberOfOpenDrafts: Int) -> CGFloat {
+    class func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat {
         if numberOfOpenDrafts == 0 {
             return 0
         } else {

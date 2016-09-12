@@ -9,50 +9,50 @@
 import UIKit
 
 struct PartialConstraint {
-    private let item:AnyObject
-    private let attribute:NSLayoutAttribute
-    private let multiplier:CGFloat?
-    private let constant:CGFloat?
+    fileprivate let item:AnyObject
+    fileprivate let attribute:NSLayoutAttribute
+    fileprivate let multiplier:CGFloat?
+    fileprivate let constant:CGFloat?
     
-    private func constraintWith(partial:PartialConstraint, relation:NSLayoutRelation) -> NSLayoutConstraint {
+    fileprivate func constraintWith(_ partial:PartialConstraint, relation:NSLayoutRelation) -> NSLayoutConstraint {
         assert(multiplier == nil && constant == nil, "Cannot define multiplier or constant on LHS.")
         
         return NSLayoutConstraint(item: item, attribute: attribute, relatedBy: relation, toItem: partial.item, attribute: partial.attribute, multiplier: partial.multiplier ?? 1, constant: partial.constant ?? 0)
     }
     
-    private func constraintWith(value:CGFloat, relation:NSLayoutRelation) -> NSLayoutConstraint {
+    fileprivate func constraintWith(_ value:CGFloat, relation:NSLayoutRelation) -> NSLayoutConstraint {
         assert(multiplier == nil && constant == nil, "Cannot define multiplier or constant on LHS.")
         
-        return NSLayoutConstraint(item: item, attribute: attribute, relatedBy: relation, toItem: nil, attribute: .NotAnAttribute, multiplier: 0, constant: value)
+        return NSLayoutConstraint(item: item, attribute: attribute, relatedBy: relation, toItem: nil, attribute: .notAnAttribute, multiplier: 0, constant: value)
     }
 }
 
-func attr(item:AnyObject, _ attribute:NSLayoutAttribute) -> PartialConstraint {
+func attr(_ item:AnyObject, _ attribute:NSLayoutAttribute) -> PartialConstraint {
     return PartialConstraint(item: item, attribute: attribute, multiplier: nil, constant: nil)
 }
 
 func == (lhs:PartialConstraint, rhs:PartialConstraint) -> NSLayoutConstraint {
-    return lhs.constraintWith(rhs, relation:.Equal)
+    return lhs.constraintWith(rhs, relation:.equal)
 }
 
 func >= (lhs:PartialConstraint, rhs:PartialConstraint) -> NSLayoutConstraint {
-    return lhs.constraintWith(rhs, relation:.GreaterThanOrEqual)
+    return lhs.constraintWith(rhs, relation:.greaterThanOrEqual)
 }
 
 func <= (lhs:PartialConstraint, rhs:PartialConstraint) -> NSLayoutConstraint {
-    return lhs.constraintWith(rhs, relation:.LessThanOrEqual)
+    return lhs.constraintWith(rhs, relation:.lessThanOrEqual)
 }
 
 func == (lhs:PartialConstraint, rhs:CGFloat) -> NSLayoutConstraint {
-    return lhs.constraintWith(rhs, relation:.Equal)
+    return lhs.constraintWith(rhs, relation:.equal)
 }
 
 func >= (lhs:PartialConstraint, rhs:CGFloat) -> NSLayoutConstraint {
-    return lhs.constraintWith(rhs, relation:.GreaterThanOrEqual)
+    return lhs.constraintWith(rhs, relation:.greaterThanOrEqual)
 }
 
 func <= (lhs:PartialConstraint, rhs:CGFloat) -> NSLayoutConstraint {
-    return lhs.constraintWith(rhs, relation:.LessThanOrEqual)
+    return lhs.constraintWith(rhs, relation:.lessThanOrEqual)
 }
 
 func * (lhs:PartialConstraint, rhs:CGFloat) -> PartialConstraint {
@@ -82,16 +82,16 @@ func - (lhs:PartialConstraint, rhs:CGFloat) -> PartialConstraint {
 
 extension UIView {
     
-    func constrainToSuperviewEdges(inset:UIEdgeInsets = UIEdgeInsetsZero, useLeadingAndTrailing:Bool = true) {
+    func constrainToSuperviewEdges(_ inset:UIEdgeInsets = .zero, useLeadingAndTrailing:Bool = true) {
         if let parent = superview {
             
-            let leading:NSLayoutAttribute = useLeadingAndTrailing ? .Leading : .Left
-            let trailing:NSLayoutAttribute = useLeadingAndTrailing ? .Trailing : .Right
+            let leading:NSLayoutAttribute = useLeadingAndTrailing ? .leading : .left
+            let trailing:NSLayoutAttribute = useLeadingAndTrailing ? .trailing : .right
             
             translatesAutoresizingMaskIntoConstraints = false
             parent.addConstraints([
-                attr(self, .Top) == attr(parent, .Top) + inset.top,
-                attr(self, .Bottom) == attr(parent, .Bottom) - inset.bottom,
+                attr(self, .top) == attr(parent, .top) + inset.top,
+                attr(self, .bottom) == attr(parent, .bottom) - inset.bottom,
                 attr(self, leading) == attr(parent, leading) + inset.left,
                 attr(self, trailing) == attr(parent, trailing) - inset.right
                 ])
@@ -106,8 +106,8 @@ extension UIView {
             
             translatesAutoresizingMaskIntoConstraints = false
             parent.addConstraints([
-                attr(self, .CenterX) == attr(parent, .CenterX),
-                attr(self, .CenterY) == attr(parent, .CenterY)
+                attr(self, .centerX) == attr(parent, .centerX),
+                attr(self, .centerY) == attr(parent, .centerY)
                 ])
             
         } else {

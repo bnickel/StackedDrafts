@@ -11,9 +11,9 @@ import UIKit
 @IBDesignable
 class OpenDraftHeaderOverlayView: UIView {
     
-    private var extraBackgroundView = UIView()
-    @IBOutlet private var contentView: UIView?
-    @IBOutlet private var label: UILabel?
+    fileprivate var extraBackgroundView = UIView()
+    @IBOutlet fileprivate var contentView: UIView?
+    @IBOutlet fileprivate var label: UILabel?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,7 +21,7 @@ class OpenDraftHeaderOverlayView: UIView {
     }
     
     convenience init() {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -34,15 +34,15 @@ class OpenDraftHeaderOverlayView: UIView {
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    private func loadContentView() {
-        UINib(nibName: "OpenDraftHeaderOverlayView.contentView", bundle: NSBundle(forClass: OpenDraftsIndicatorView.self)).instantiateWithOwner(self, options: nil)
+    fileprivate func loadContentView() {
+        UINib(nibName: "OpenDraftHeaderOverlayView.contentView", bundle: Bundle(for: OpenDraftsIndicatorView.self)).instantiate(withOwner: self, options: nil)
         guard let contentView = contentView, let label = label else { preconditionFailure() }
         contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        extraBackgroundView.backgroundColor = .whiteColor()
+        extraBackgroundView.backgroundColor = .white
         
         addSubview(extraBackgroundView)
         addSubview(contentView)

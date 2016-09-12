@@ -13,25 +13,25 @@ func * (a: CATransform3D, b: CATransform3D) -> CATransform3D {
 }
 
 struct PannedItem {
-    let indexPath:NSIndexPath
+    let indexPath:IndexPath
     var translation:CGPoint
 }
 
 class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     
-    private var allAttributes:[UICollectionViewLayoutAttributes] = []
-    private var contentSize = CGSizeZero
-    private var changingBounds = false
+    fileprivate var allAttributes:[UICollectionViewLayoutAttributes] = []
+    fileprivate var contentSize = CGSize.zero
+    fileprivate var changingBounds = false
     
     var pannedItem:PannedItem? { didSet { invalidateLayout() } }
     @NSCopying var lastPannedItemAttributes:UICollectionViewLayoutAttributes?
     var deletingPannedItem = false
     
-    override func prepareLayout() {
+    override func prepare() {
         guard let collectionView = collectionView else { return }
-        precondition(collectionView.numberOfSections() == 1)
+        precondition(collectionView.numberOfSections == 1)
         
-        let count = collectionView.numberOfItemsInSection(0)
+        let count = collectionView.numberOfItems(inSection: 0)
         let size = collectionView.frame.size
         
         var topCenter = CGPoint(x: size.width / 2, y: 40)
@@ -51,17 +51,17 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         
         for i in 0 ..< count {
             
-            let indexPath = NSIndexPath(forItem: i, inSection: 0)
-            let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-            let size = i == 0 ? size : UIEdgeInsetsInsetRect(CGRect(origin: CGPointZero, size: size), DraftPresentationController.presentedInsets).size
+            let indexPath = IndexPath(item: i, section: 0)
+            let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+            let size = i == 0 ? size : UIEdgeInsetsInsetRect(CGRect(origin: .zero, size: size), DraftPresentationController.presentedInsets).size
             
-            attributes.bounds = CGRect(origin: CGPointZero, size: size)
+            attributes.bounds = CGRect(origin: .zero, size: size)
             attributes.zIndex = i
             attributes.transform3D = rotateDown(degrees: angleInDegrees, itemHeight: size.height, scale: scale)
             attributes.center = topCenter
             
             let gapMultiplier:CGFloat
-            if let pannedItem = pannedItem where pannedItem.indexPath.item == i {
+            if let pannedItem = pannedItem, pannedItem.indexPath.item == i {
                 let delta = pannedItem.translation.x
                 if delta > 0 {
                     attributes.center.x += sqrt(delta)
@@ -86,7 +86,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         }
     }
     
-    private func rotateDown(degrees angleInDegrees:CGFloat, itemHeight:CGFloat, scale:CGFloat) -> CATransform3D {
+    fileprivate func rotateDown(degrees angleInDegrees:CGFloat, itemHeight:CGFloat, scale:CGFloat) -> CATransform3D {
         
         let angleOfRotation:CGFloat = (-angleInDegrees / 180) * 3.1415926535
         let rotation = CATransform3DMakeRotation(angleOfRotation, 1, 0, 0)
@@ -100,25 +100,25 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         return translateDown * rotation * scale * perspective
     }
     
-    override func collectionViewContentSize() -> CGSize {
+    override var collectionViewContentSize : CGSize {
         return contentSize
     }
     
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         return allAttributes.filter({ $0.frame.intersects(rect) })
     }
     
-    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         return allAttributes.indices.contains(indexPath.item) ? allAttributes[indexPath.item] : nil
     }
     
-    override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
     
-    override func prepareForAnimatedBoundsChange(oldBounds: CGRect) {
+    override func prepare(forAnimatedBoundsChange oldBounds: CGRect) {
         changingBounds = true
-        super.prepareForAnimatedBoundsChange(oldBounds)
+        super.prepare(forAnimatedBoundsChange: oldBounds)
     }
     
     override func finalizeAnimatedBoundsChange() {
@@ -126,16 +126,16 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         super.finalizeAnimatedBoundsChange()
     }
     
-    override func initialLayoutAttributesForAppearingItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        return allAttributes.indices.contains(indexPath.item) && !changingBounds ? allAttributes[indexPath.item] : nil
+    override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        return allAttributes.indices.contains((indexPath as NSIndexPath).item) && !changingBounds ? allAttributes[(indexPath as NSIndexPath).item] : nil
     }
     
-    override func finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
-        if let lastPannedItemAttributes = lastPannedItemAttributes where deletingPannedItem && lastPannedItemAttributes.indexPath == itemIndexPath, let collectionView = collectionView {
+    override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        if let lastPannedItemAttributes = lastPannedItemAttributes , deletingPannedItem && lastPannedItemAttributes.indexPath == itemIndexPath, let collectionView = collectionView {
             lastPannedItemAttributes.center.x = -collectionView.frame.width / 2
             return lastPannedItemAttributes
         } else {
-            return super.finalLayoutAttributesForDisappearingItemAtIndexPath(itemIndexPath)
+            return super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
         }
     }
 }

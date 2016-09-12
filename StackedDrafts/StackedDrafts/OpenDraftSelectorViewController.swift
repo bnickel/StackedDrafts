@@ -8,16 +8,40 @@
 
 import UIKit
 
+
+// TODO: This can't be good.
+
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
+
 class OpenDraftSelectorViewController: UIViewController {
     
-    private let normalLayout = AllDraftsCollectionViewLayout()
-    private let initialLayout = PresenterSelectedLayout()
-    private let draftSelectedLayout = DraftSelectedCollectionViewLayout()
-    private var selectableViewControllers:[DraftViewControllerProtocol] = []
+    fileprivate let normalLayout = AllDraftsCollectionViewLayout()
+    fileprivate let initialLayout = PresenterSelectedLayout()
+    fileprivate let draftSelectedLayout = DraftSelectedCollectionViewLayout()
+    fileprivate var selectableViewControllers:[DraftViewControllerProtocol] = []
     
-    private var lastPanTimestamp:NSTimeInterval = 0
+    fileprivate var lastPanTimestamp:TimeInterval = 0
     
-    private var collectionView:UICollectionView!
+    fileprivate var collectionView:UICollectionView!
     
     weak var source: UIViewController?
     
@@ -31,15 +55,15 @@ class OpenDraftSelectorViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
     
     override func loadView() {
-        let frame = CGRectMake(0, 0, 100, 100)
+        let frame = CGRect(x: 0, y: 0, width: 100, height: 100)
         let collectionView = UICollectionView(frame: frame, collectionViewLayout: normalLayout)
-        collectionView.backgroundColor = UIColor.blackColor()
-        collectionView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        collectionView.backgroundColor = .black
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.alwaysBounceVertical = true
         
         let view = UIView(frame: frame)
@@ -67,51 +91,51 @@ class OpenDraftSelectorViewController: UIViewController {
         }
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         loadSnapshotsIfNeeded(animated: false)
     }
     
-    func render(draftViewController:DraftViewControllerProtocol) -> UIView {
+    func render(_ draftViewController:DraftViewControllerProtocol) -> UIView {
         guard let viewController = draftViewController as? UIViewController else { preconditionFailure() }
         viewController.view.frame = UIEdgeInsetsInsetRect(view.bounds, DraftPresentationController.presentedInsets)
         viewController.view.layoutIfNeeded()
-        return viewController.view.snapshotViewAfterScreenUpdates(true)!
+        return viewController.view.snapshotView(afterScreenUpdates: true)!
     }
     
     var snapshots:[UIView?]? = nil
     
-    func loadSnapshotsIfNeeded(animated animated:Bool) {
+    func loadSnapshotsIfNeeded(animated:Bool) {
         guard snapshots == nil else { return }
         if source?.view.window == nil {
             source?.view.frame = view.frame
             source?.view.layoutIfNeeded()
         }
-        snapshots = [source?.view.snapshotViewAfterScreenUpdates(true)] + selectableViewControllers.map(render)
+        snapshots = [source?.view.snapshotView(afterScreenUpdates: true)] + selectableViewControllers.map(render)
         
-        for indexPath in collectionView.indexPathsForVisibleItems() {
-            (collectionView.cellForItemAtIndexPath(indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots?[indexPath.item]
+        for indexPath in collectionView.indexPathsForVisibleItems {
+            (collectionView.cellForItem(at: indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots?[(indexPath as NSIndexPath).item]
         }
         
         if animated {
             let realSnapshots = snapshots?.flatMap({$0}) ?? []
             for snapshot in realSnapshots { snapshot.alpha = 0 }
-            UIView.animateWithDuration(0.25) {
+            UIView.animate(withDuration: 0.25, animations: {
                 for snapshot in realSnapshots { snapshot.alpha = 1 }
-            }
+            }) 
         }
     }
     
     func reloadSourceSnapshot() {
-        let snapshot = source?.view.snapshotViewAfterScreenUpdates(true)
-        (collectionView.cellForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0)) as? OpenDraftCollectionViewCell)?.snapshotView = snapshot
+        let snapshot = source?.view.snapshotView(afterScreenUpdates: true)
+        (collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? OpenDraftCollectionViewCell)?.snapshotView = snapshot
         
         if snapshots?.count > 0 {
             snapshots?[0] = snapshot
         }
     }
     
-    private func animateSwitchToLayout(layout:UICollectionViewLayout, almostParallelAnimation:(() -> Void)?, parallelAtEnd:Bool, completion:(() -> Void)?) {
+    fileprivate func animateSwitchToLayout(_ layout:UICollectionViewLayout, almostParallelAnimation:(() -> Void)?, parallelAtEnd:Bool, completion:(() -> Void)?) {
         
         view.layer.speed = 0.75
         
@@ -128,74 +152,74 @@ class OpenDraftSelectorViewController: UIViewController {
         
         if let almostParallelAnimation = almostParallelAnimation {
             needed += 1
-            dispatch_async(dispatch_get_main_queue(), { 
-                UIView.animateWithDuration(0.2, delay: parallelAtEnd ? 0.1 : 0, options: [], animations: almostParallelAnimation, completion: tryComplete)
+            DispatchQueue.main.async(execute: { 
+                UIView.animate(withDuration: 0.2, delay: parallelAtEnd ? 0.1 : 0, options: [], animations: almostParallelAnimation, completion: tryComplete)
             })
         }
     }
     
-    private func forEachVisibleCell(@noescape block: (OpenDraftCollectionViewCell) -> Void) {
-        for cell in collectionView.visibleCells() {
+    fileprivate func forEachVisibleCell(_ block: (OpenDraftCollectionViewCell) -> Void) {
+        for cell in collectionView.visibleCells {
             if let cell = cell as? OpenDraftCollectionViewCell {
                 block(cell)
             }
         }
     }
     
-    override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         snapshots = nil
         forEachVisibleCell({ $0.snapshotView = nil })
-        coordinator.animateAlongsideTransition(nil, completion: { context in
+        coordinator.animate(alongsideTransition: nil, completion: { context in
             self.loadSnapshotsIfNeeded(animated: true)
         })
     }
     
-    private func removeViewController(at indexPath:NSIndexPath) {
-        guard indexPath.item != 0 else { return }
+    fileprivate func removeViewController(at indexPath:IndexPath) {
+        guard (indexPath as NSIndexPath).item != 0 else { return }
         
         if selectableViewControllers.count > 1 {
-            let removed = selectableViewControllers.removeAtIndex(indexPath.item - 1)
-            snapshots?.removeAtIndex(indexPath.item)
-            collectionView.deleteItemsAtIndexPaths([indexPath])
+            let removed = selectableViewControllers.remove(at: (indexPath as NSIndexPath).item - 1)
+            _ = snapshots?.remove(at: indexPath.item)
+            collectionView.deleteItems(at: [indexPath])
             OpenDraftsManager.sharedInstance.remove(removed)
         } else {
             OpenDraftsManager.sharedInstance.remove(selectableViewControllers[0])
-            dismissViewControllerAnimated(true, completion: nil)
+            dismiss(animated: true, completion: nil)
         }
     }
     
-    private func removeViewController(from cell:UICollectionViewCell) {
-        guard let indexPath = collectionView.indexPathForCell(cell) else { return }
+    fileprivate func removeViewController(from cell:UICollectionViewCell) {
+        guard let indexPath = collectionView.indexPath(for: cell) else { return }
         self.removeViewController(at:indexPath)
     }
 }
 
 extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
     
-    @objc func panned(gestureRecognizer: UIPanGestureRecognizer) {
+    @objc func panned(_ gestureRecognizer: UIPanGestureRecognizer) {
         
-        let now = NSDate.timeIntervalSinceReferenceDate()
+        let now = Date.timeIntervalSinceReferenceDate
         
         switch gestureRecognizer.state {
-        case .Began:
+        case .began:
             lastPanTimestamp = now
-            if let indexPath = collectionView.indexPathForItemAtPoint(gestureRecognizer.locationInView(collectionView)) where indexPath.item != 0 {
-                normalLayout.pannedItem = PannedItem(indexPath: indexPath, translation: gestureRecognizer.translationInView(collectionView))
+            if let indexPath = collectionView.indexPathForItem(at: gestureRecognizer.location(in: collectionView)) , (indexPath as NSIndexPath).item != 0 {
+                normalLayout.pannedItem = PannedItem(indexPath: indexPath, translation: gestureRecognizer.translation(in: collectionView))
             }
             
-        case .Changed:
+        case .changed:
             lastPanTimestamp = now
-            normalLayout.pannedItem?.translation = gestureRecognizer.translationInView(collectionView)
+            normalLayout.pannedItem?.translation = gestureRecognizer.translation(in: collectionView)
             
         default:
             collectionView.performBatchUpdates({
                 defer { self.normalLayout.pannedItem = nil }
                 guard let pannedItem = self.normalLayout.pannedItem else { return }
-                let delta = gestureRecognizer.translationInView(self.collectionView).x
+                let delta = gestureRecognizer.translation(in: self.collectionView).x
                 
-                if delta < -(self.collectionView.frame.width / 2) || (delta < 0 && gestureRecognizer.velocityInView(self.collectionView).x < 0 && (now - self.lastPanTimestamp) < 0.25) {
+                if delta < -(self.collectionView.frame.width / 2) || (delta < 0 && gestureRecognizer.velocity(in: self.collectionView).x < 0 && (now - self.lastPanTimestamp) < 0.25) {
                     self.normalLayout.deletingPannedItem = true
-                    self.removeViewController(at: pannedItem.indexPath)
+                    self.removeViewController(at: pannedItem.indexPath as IndexPath)
                 }
             }, completion: { _ in
                 self.normalLayout.deletingPannedItem = false
@@ -204,13 +228,13 @@ extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
         
     }
     
-    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard collectionView.collectionViewLayout == normalLayout else { return false }
         guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer else { return false }
         
-        let velocity = gestureRecognizer.velocityInView(collectionView)
+        let velocity = gestureRecognizer.velocity(in: collectionView)
         guard abs(velocity.x) > abs(velocity.y) else { return false }
-        guard let indexPath = collectionView.indexPathForItemAtPoint(gestureRecognizer.locationInView(collectionView)) where indexPath.item != 0 else { return false }
+        guard let indexPath = collectionView.indexPathForItem(at: gestureRecognizer.location(in: collectionView)) , (indexPath as NSIndexPath).item != 0 else { return false }
         
         return true
     }
@@ -218,23 +242,23 @@ extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
 
 extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollectionViewDelegate {
     
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 1 + selectableViewControllers.count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let view = OpenDraftCollectionViewCell.cell(at: indexPath, collectionView: collectionView)
-        view.snapshotView = snapshots?[indexPath.item]
+        view.snapshotView = snapshots?[(indexPath as NSIndexPath).item]
         
-        if indexPath.item == 0 {
+        if (indexPath as NSIndexPath).item == 0 {
             view.showHeader = false
         } else {
             view.showHeader = true
-            view.draftTitle = selectableViewControllers[indexPath.item - 1].draftTitle
+            view.draftTitle = selectableViewControllers[(indexPath as NSIndexPath).item - 1].draftTitle
         }
         
         view.closeTapped = removeViewController(from:)
@@ -242,15 +266,15 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
         return view
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        guard indexPath.item != 0 else {
-            presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard (indexPath as NSIndexPath).item != 0 else {
+            presentingViewController?.dismiss(animated: true, completion: nil)
             return
         }
         
-        guard let viewController = self.selectableViewControllers[indexPath.item - 1] as? UIViewController else { return }
+        guard let viewController = self.selectableViewControllers[(indexPath as NSIndexPath).item - 1] as? UIViewController else { return }
         
-        draftSelectedLayout.selectedIndex = indexPath.item
+        draftSelectedLayout.selectedIndex = (indexPath as NSIndexPath).item
         animateSwitchToLayout(draftSelectedLayout, almostParallelAnimation: {
             self.forEachVisibleCell({
                 $0.showHeader = false
@@ -266,15 +290,15 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
      
      Something specific in iOS8+ triggers a rendering to occur between subsequent transitions so the best thing I've come up with is putting a snapshot of the view over the the whole window until the transition completes.
     */
-    private func swapForViewController(viewController:UIViewController) {
+    fileprivate func swapForViewController(_ viewController:UIViewController) {
         
         guard let presentingViewController = presentingViewController, let window = view.window else { return }
-        let snapshot = view.snapshotViewAfterScreenUpdates(true)
+        let snapshot = view.snapshotView(afterScreenUpdates: true)
         window.addSubview(snapshot!)
         
-        presentingViewController.dismissViewControllerAnimated(false, completion: nil)
-        presentingViewController.presentViewController(viewController, animated: false, completion: {
-            dispatch_async(dispatch_get_main_queue(), {
+        presentingViewController.dismiss(animated: false, completion: nil)
+        presentingViewController.present(viewController, animated: false, completion: {
+            DispatchQueue.main.async(execute: {
                 snapshot!.removeFromSuperview()
             })
         })
@@ -283,33 +307,33 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
 
 extension OpenDraftSelectorViewController : UIViewControllerTransitioningDelegate {
     
-    func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return OpenDraftSelectorPresentationController()
     }
     
-    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return OpenDraftSelectorDismissalController()
     }
 }
 
 class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimatedTransitioning {
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.3
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as! OpenDraftSelectorViewController
-        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
+        let toViewController = transitionContext.viewController(forKey: .to) as! OpenDraftSelectorViewController
+        let toView = transitionContext.view(forKey: .to)!
         
-        let finalFrameRelativeToSuperview = transitionContext.finalFrameForViewController(toViewController)
-        let finalFrame = toViewController.view.superview?.convertRect(finalFrameRelativeToSuperview, toView: toView.superview) ?? finalFrameRelativeToSuperview
+        let finalFrameRelativeToSuperview = transitionContext.finalFrame(for: toViewController)
+        let finalFrame = toViewController.view.superview?.convert(finalFrameRelativeToSuperview, to: toView.superview) ?? finalFrameRelativeToSuperview
         
-        transitionContext.containerView().addSubview(toView)
+        transitionContext.containerView.addSubview(toView)
         toView.frame = finalFrame
         toView.layoutIfNeeded()
-        toViewController.source = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)
+        toViewController.source = transitionContext.viewController(forKey: .from)
         toViewController.loadSnapshotsIfNeeded(animated: false)
         
         toViewController.collectionView.collectionViewLayout = toViewController.initialLayout
@@ -321,7 +345,7 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
                 $0.showGradientView = true
             })
         }, parallelAtEnd: true, completion: {
-            if transitionContext.transitionWasCancelled() {
+            if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
             } else {
@@ -338,22 +362,22 @@ class OpenDraftSelectorPresentationController : NSObject, UIViewControllerAnimat
 
 class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedTransitioning {
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.3
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as! OpenDraftSelectorViewController
-        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
+        let fromViewController = transitionContext.viewController(forKey: .from) as! OpenDraftSelectorViewController
+        let fromView = transitionContext.view(forKey: .from)!
+        let toViewController = transitionContext.viewController(forKey: .to)!
         
-        let initialFrameRelativeToSuperview = transitionContext.initialFrameForViewController(fromViewController)
-        let initialFrame = fromViewController.view.superview?.convertRect(initialFrameRelativeToSuperview, toView: fromView.superview) ?? initialFrameRelativeToSuperview
+        let initialFrameRelativeToSuperview = transitionContext.initialFrame(for: fromViewController)
+        let initialFrame = fromViewController.view.superview?.convert(initialFrameRelativeToSuperview, to: fromView.superview) ?? initialFrameRelativeToSuperview
         
-        let finalFrameForPresenter = transitionContext.finalFrameForViewController(toViewController)
+        let finalFrameForPresenter = transitionContext.finalFrame(for: toViewController)
         
-        transitionContext.containerView().addSubview(fromView)
+        transitionContext.containerView.addSubview(fromView)
         fromView.frame = initialFrame
         fromView.layoutIfNeeded()
         
@@ -370,7 +394,7 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
                 $0.showGradientView = false
             })
         }, parallelAtEnd: false, completion: {
-            if transitionContext.transitionWasCancelled() {
+            if transitionContext.transitionWasCancelled {
                 transitionContext.completeTransition(false)
             } else {
                 fromView.removeFromSuperview()
@@ -382,23 +406,23 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
 
 extension OpenDraftSelectorViewController : UIViewControllerRestoration {
     
-    static func viewControllerWithRestorationIdentifierPath(identifierComponents: [AnyObject], coder: NSCoder) -> UIViewController? {
+    static func viewController(withRestorationIdentifierPath identifierComponents: [Any], coder: NSCoder) -> UIViewController? {
         let viewController = OpenDraftSelectorViewController()
         viewController.restorationIdentifier = identifierComponents.last as? String
         return viewController
     }
     
-    override func encodeRestorableStateWithCoder(coder: NSCoder) {
-        super.encodeRestorableStateWithCoder(coder)
-        coder.encodeObject(source, forKey: "source")
+    override func encodeRestorableState(with coder: NSCoder) {
+        super.encodeRestorableState(with: coder)
+        coder.encode(source, forKey: "source")
         coder.encodeSafeArray(selectableViewControllers, forKey: "selectableViewControllers")
     }
     
-    override func decodeRestorableStateWithCoder(coder: NSCoder) {
-        source = coder.decodeObjectForKey("source") as? UIViewController
+    override func decodeRestorableState(with coder: NSCoder) {
+        source = coder.decodeObject(forKey: "source") as? UIViewController
         selectableViewControllers = coder.decodeSafeArrayForKey("selectableViewControllers")
         collectionView.reloadData()
-        super.decodeRestorableStateWithCoder(coder)
+        super.decodeRestorableState(with: coder)
     }
     
     override func applicationFinishedRestoringState() {
@@ -416,7 +440,7 @@ extension UIViewController {
         return hasRestorationSource && restorationIdentifier != nil
     }
     
-    @nonobjc func setRestorationIdentifier(restorationIdentifier:String, contingentOnViewController previousViewController:UIViewController) {
+    @nonobjc func setRestorationIdentifier(_ restorationIdentifier:String, contingentOnViewController previousViewController:UIViewController) {
         if previousViewController.isRestorationEligible && hasRestorationSource {
             self.restorationIdentifier = restorationIdentifier
         } else {

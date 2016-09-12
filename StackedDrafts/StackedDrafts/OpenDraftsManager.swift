@@ -13,42 +13,42 @@ import UIKit
  
  - Note: This singleton is eligible for state restoration.  Because it can contain multiple detached view controllers, it is important that each draft view controller have a unique restoration identifier such as a UUID.
  */
-@objc(SEUIOpenDraftsManager) public class OpenDraftsManager : NSObject {
+@objc(SEUIOpenDraftsManager) open class OpenDraftsManager : NSObject {
     
-    public static let sharedInstance:OpenDraftsManager = {
+    open static let sharedInstance:OpenDraftsManager = {
         let manager = OpenDraftsManager()
-        UIApplication.registerObjectForStateRestoration(manager, restorationIdentifier: "OpenDraftsManager.sharedInstance")
+        UIApplication.registerObject(forStateRestoration: manager, restorationIdentifier: "OpenDraftsManager.sharedInstance")
         return manager
     }()
     
-    enum notifications : String {
-        case didUpdateOpenDraftingControllers = "OpenDraftsManager.notifications.didUpdateOpenDraftingControllers"
+    struct notifications {
+        static let didUpdateOpenDraftingControllers = NSNotification.Name(rawValue: "OpenDraftsManager.notifications.didUpdateOpenDraftingControllers")
     }
     
     override init() {
         super.init()
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(didPresent(_:)), name: DraftPresentationController.notifications.didPresentDraftViewController.rawValue, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(willDismissNonInteractive(_:)), name: DraftPresentationController.notifications.willDismissNonInteractiveDraftViewController.rawValue, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didPresent(_:)), name: DraftPresentationController.notifications.didPresentDraftViewController, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willDismissNonInteractive(_:)), name: DraftPresentationController.notifications.willDismissNonInteractiveDraftViewController, object: nil)
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     /// All instances of `DraftViewControllerProtocol` either presented or minimized.
-    private(set) public var openDraftingViewControllers:[DraftViewControllerProtocol] = [] { didSet { notify() } }
+    fileprivate(set) open var openDraftingViewControllers:[DraftViewControllerProtocol] = [] { didSet { notify() } }
     
-    private func notify() {
-        NSNotificationCenter.defaultCenter().postNotificationName(notifications.didUpdateOpenDraftingControllers.rawValue, object: self, userInfo: nil)
+    fileprivate func notify() {
+        NotificationCenter.default.post(name: Notification.Name(rawValue: notifications.didUpdateOpenDraftingControllers.rawValue), object: self, userInfo: nil)
     }
     
-    @objc private func didPresent(notification:NSNotification) {
-        guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController.rawValue] as? DraftViewControllerProtocol else { return }
+    @objc fileprivate func didPresent(_ notification:Notification) {
+        guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController] as? DraftViewControllerProtocol else { return }
         add(viewController)
     }
     
-    @objc private func willDismissNonInteractive(notification:NSNotification) {
-        guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController.rawValue] as? DraftViewControllerProtocol else { return }
+    @objc fileprivate func willDismissNonInteractive(_ notification:Notification) {
+        guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController] as? DraftViewControllerProtocol else { return }
         remove(viewController)
     }
     
@@ -62,38 +62,41 @@ import UIKit
        - animated: Whether to animate the transition.
        - completion: An optional callback notifying when the presentation has completed.
      */
-    public func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+    open func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
         if self.openDraftingViewControllers.count > 1 {
             let viewController = OpenDraftSelectorViewController()
             viewController.setRestorationIdentifier("open-drafts", contingentOnViewController: presentingViewController)
-            presentingViewController.presentViewController(viewController, animated: animated, completion: completion)
+            presentingViewController.present(viewController, animated: animated, completion: completion)
         } else if let viewController = self.openDraftingViewControllers.last as? UIViewController {
-            presentingViewController.presentViewController(viewController, animated: animated, completion: completion)
+            presentingViewController.present(viewController, animated: animated, completion: completion)
             viewController.draftPresentationController?.hasBeenPresented = true
         }
     }
     
-    public func add(viewController:DraftViewControllerProtocol) {
+    open func add(_ viewController:DraftViewControllerProtocol) {
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController }) + [viewController]
     }
     
-    public func remove(viewController:DraftViewControllerProtocol) {
+    open func remove(_ viewController:DraftViewControllerProtocol) {
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController })
     }
 }
 
 extension OpenDraftsManager : UIStateRestoring, UIObjectRestoration {
-    public var objectRestorationClass: AnyObject.Type? { return OpenDraftsManager.self }
     
-    public static func objectWithRestorationIdentifierPath(identifierComponents: [String], coder: NSCoder) -> UIStateRestoring? {
+    public var objectRestorationClass: UIObjectRestoration.Type? {
+        return OpenDraftsManager.self
+    }
+    
+    public static func object(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIStateRestoring? {
         return OpenDraftsManager.sharedInstance
     }
     
-    public func encodeRestorableStateWithCoder(coder: NSCoder) {
+    public func encodeRestorableState(with coder: NSCoder) {
         coder.encodeSafeArray(openDraftingViewControllers, forKey: "openDraftingViewControllers")
     }
     
-    public func decodeRestorableStateWithCoder(coder: NSCoder) {
+    public func decodeRestorableState(with coder: NSCoder) {
         openDraftingViewControllers = coder.decodeSafeArrayForKey("openDraftingViewControllers")
     }
     

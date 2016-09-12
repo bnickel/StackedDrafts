@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
+final class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     
     let interactiveTransitioning:UIViewControllerInteractiveTransitioning?
     
@@ -20,7 +20,7 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
     /**
      Sooo... in iOS 8 if the gap between `updateInteractiveTransition` and `finishInteractiveTransition` is below transitionDuration (with some amount of wiggle room), the animation's completion block will never call.  This hack drops the duration really low on iOS 8, then cranks down the interaction completion speed to compensate.
      */
-    static var hackDuration:NSTimeInterval {
+    static var hackDuration:TimeInterval {
         if #available(iOS 9, *) {
             return normalDuration
         } else {
@@ -28,30 +28,30 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         }
     }
     
-    static let normalDuration:NSTimeInterval = 0.3
+    static let normalDuration:TimeInterval = 0.3
     
     static var interactiveCompletionSpeed: CGFloat {
         return CGFloat(hackDuration / normalDuration)
     }
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
-        return interactiveTransitioning != nil ? self.dynamicType.hackDuration : self.dynamicType.normalDuration
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        return interactiveTransitioning != nil ? DraftDismissalAnimatedTransitioning.hackDuration : DraftDismissalAnimatedTransitioning.normalDuration
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        let duration = transitionDuration(transitionContext)
-        let animationOptions:UIViewAnimationOptions = interactiveTransitioning != nil ? .CurveLinear : .CurveEaseInOut
+        let duration = transitionDuration(using: transitionContext)
+        let animationOptions:UIViewAnimationOptions = interactiveTransitioning != nil ? .curveLinear : UIViewAnimationOptions()
         
-        let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
-        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!
+        let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)!
+        let fromView = transitionContext.view(forKey: UITransitionContextViewKey.from)!
         
-        let initialFrameRelativeToSuperview = transitionContext.initialFrameForViewController(fromViewController)
-        let initialFrame = fromViewController.view.superview!.convertRect(initialFrameRelativeToSuperview, toView: fromView.superview)
+        let initialFrameRelativeToSuperview = transitionContext.initialFrame(for: fromViewController)
+        let initialFrame = fromViewController.view.superview!.convert(initialFrameRelativeToSuperview, to: fromView.superview)
         
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
-        let toView = transitionContext.viewForKey(UITransitionContextToViewKey) ?? toViewController.view!
-        let ownsToView = fromViewController.presentationController?.shouldRemovePresentersView() ?? false
+        let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)!
+        let toView = transitionContext.view(forKey: UITransitionContextViewKey.to) ?? toViewController.view!
+        let ownsToView = fromViewController.presentationController?.shouldRemovePresentersView ?? false
         
         let finalInset = fromViewController.draftPresentationController?.dismissalInset ?? 0
         
@@ -59,23 +59,23 @@ class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTra
         finalFrame.origin.y = initialFrame.maxY - finalInset
         
         fromView.frame = initialFrame
-        toView.frame = transitionContext.finalFrameForViewController(toViewController)
+        toView.frame = transitionContext.finalFrame(for: toViewController)
         toView.layoutIfNeeded()
         if ownsToView {
-            transitionContext.containerView().insertSubview(toView, atIndex: 0)
+            transitionContext.containerView.insertSubview(toView, at: 0)
         }
         
         let initialTransform = fromView.transform
         let animationTransform = DraftPresentationController.presenterTransform(height: toView.bounds.height)
         toView.transform = animationTransform
         
-        UIView.animateWithDuration(duration, delay: 0, options: animationOptions, animations: {
+        UIView.animate(withDuration: duration, delay: 0, options: animationOptions, animations: {
             fromView.endEditing(true)
             fromView.frame = finalFrame
             toView.transform = initialTransform
         }, completion: { _ in
             toView.transform = initialTransform
-            if transitionContext.transitionWasCancelled() {
+            if transitionContext.transitionWasCancelled {
                 if ownsToView {
                     toView.removeFromSuperview()
                 }

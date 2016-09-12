@@ -10,28 +10,28 @@ import UIKit
 
 class PresenterSelectedLayout : UICollectionViewLayout {
     
-    private var allAttributes:[UICollectionViewLayoutAttributes] = []
-    private var contentSize = CGSizeZero
+    fileprivate var allAttributes:[UICollectionViewLayoutAttributes] = []
+    fileprivate var contentSize = CGSize.zero
     
-    override func prepareLayout() {
+    override func prepare() {
         
         guard let collectionView = collectionView else { return }
-        precondition(collectionView.numberOfSections() == 1)
+        precondition(collectionView.numberOfSections == 1)
         
-        let count = collectionView.numberOfItemsInSection(0)
+        let count = collectionView.numberOfItems(inSection: 0)
         guard count > 0 else { return }
         
         let size = collectionView.frame.size
         
-        let presenterAttributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: NSIndexPath(forItem: 0, inSection: 0))
-        presenterAttributes.frame = CGRect(origin: CGPointZero, size: size)
+        let presenterAttributes = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 0))
+        presenterAttributes.frame = CGRect(origin: .zero, size: size)
         presenterAttributes.zIndex = 0
         
         var allAttributes = [presenterAttributes]
         
         for i in 1 ..< count {
-            let indexPath = NSIndexPath(forItem: i, inSection: 0)
-            let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+            let indexPath = IndexPath(item: i, section: 0)
+            let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)), size: size)
             attributes.zIndex = i
             allAttributes.append(attributes)
@@ -41,20 +41,20 @@ class PresenterSelectedLayout : UICollectionViewLayout {
         self.contentSize = size
     }
     
-    override func collectionViewContentSize() -> CGSize {
+    override var collectionViewContentSize : CGSize {
         return contentSize
     }
     
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         return allAttributes.filter({ $0.frame.intersects(rect) })
     }
     
-    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         precondition(indexPath.section == 0)
         return allAttributes[indexPath.item]
     }
     
-    override func initialLayoutAttributesForAppearingItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+    override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         return allAttributes[indexPath.item]
     }
 }

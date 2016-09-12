@@ -9,35 +9,35 @@
 import Foundation
 
 private class SafeWrapper : NSObject, NSCoding {
-    var value:AnyObject?
+    var value:Any?
     
-    init(value:AnyObject?) {
+    init(value:Any?) {
         self.value = value
     }
     
     @objc required convenience init?(coder aDecoder: NSCoder) {
-        self.init(value: aDecoder.decodeObjectForKey("value"))
+        self.init(coder: aDecoder.decodeObject(forKey: "value") as! NSCoder)
     }
     
-    @objc func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(value, forKey: "value")
+    @objc func encode(with aCoder: NSCoder) {
+        aCoder.encode(value, forKey: "value")
     }
     
-    static func wrapArray(array:[AnyObject]) -> AnyObject {
-        return array.map(SafeWrapper.init(value:))
+    static func wrapArray(_ array:[Any]) -> Any {
+        return array.map(SafeWrapper.init(value:)) as NSArray
     }
     
-    static func unwrapArray<T : AnyObject>(array:AnyObject?) -> [T] {
+    static func unwrapArray<T : AnyObject>(_ array:Any?) -> [T] {
         return (array as? [SafeWrapper])?.flatMap({ $0.value as? T }) ?? []
     }
 }
 
 extension NSCoder {
-    func encodeSafeArray(array:[AnyObject], forKey key:String) {
-        encodeObject(SafeWrapper.wrapArray(array), forKey: key)
+    func encodeSafeArray(_ array:[AnyObject], forKey key:String) {
+        encode(SafeWrapper.wrapArray(array), forKey: key)
     }
     
-    func decodeSafeArrayForKey<T: AnyObject>(key:String) -> [T] {
-        return SafeWrapper.unwrapArray(decodeObjectForKey(key))
+    func decodeSafeArrayForKey<T: AnyObject>(_ key:String) -> [T] {
+        return SafeWrapper.unwrapArray(decodeObject(forKey: key))
     }
 }

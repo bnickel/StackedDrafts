@@ -10,23 +10,23 @@ import UIKit
 
 class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     
-    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.3
     }
     
-    func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
-        let duration = transitionDuration(transitionContext)
+        let duration = transitionDuration(using: transitionContext)
         
-        let fromViewController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!
-        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey) ?? fromViewController.view!
+        let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)!
+        let fromView = transitionContext.view(forKey: UITransitionContextViewKey.from) ?? fromViewController.view!
         
-        let toViewController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
-        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
-        let ownsFromView = toViewController.presentationController?.shouldRemovePresentersView() ?? false
+        let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to)!
+        let toView = transitionContext.view(forKey: UITransitionContextViewKey.to)!
+        let ownsFromView = toViewController.presentationController?.shouldRemovePresentersView ?? false
         
-        let finalFrameRelativeToSuperview = transitionContext.finalFrameForViewController(toViewController)
-        let finalFrame = toViewController.view.superview!.convertRect(finalFrameRelativeToSuperview, toView: toView.superview)
+        let finalFrameRelativeToSuperview = transitionContext.finalFrame(for: toViewController)
+        let finalFrame = toViewController.view.superview!.convert(finalFrameRelativeToSuperview, to: toView.superview)
         
         let initialInset = toViewController.draftPresentationController?.presentationInset ?? 0
         
@@ -36,15 +36,15 @@ class SingleDraftPresentationAnimatedTransitioning: NSObject, UIViewControllerAn
         let initialTransform = fromView.transform
         let animationTransform = DraftPresentationController.presenterTransform(height: fromView.bounds.height)
         
-        transitionContext.containerView().addSubview(toView)
+        transitionContext.containerView.addSubview(toView)
         toView.frame = initialFrame
         
-        UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseOut, animations: {
+        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseOut, animations: {
             fromView.transform = animationTransform
             toView.frame = finalFrame
         }, completion: { _ in
             fromView.transform = initialTransform
-            if transitionContext.transitionWasCancelled() {
+            if transitionContext.transitionWasCancelled {
                 toView.removeFromSuperview()
                 transitionContext.completeTransition(false)
             } else {
