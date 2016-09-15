@@ -8,30 +8,6 @@
 
 import UIKit
 
-
-// TODO: This can't be good.
-
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
-
 class OpenDraftSelectorViewController: UIViewController {
     
     fileprivate let normalLayout = AllDraftsCollectionViewLayout()
@@ -130,7 +106,7 @@ class OpenDraftSelectorViewController: UIViewController {
         let snapshot = source?.view.snapshotView(afterScreenUpdates: true)
         (collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? OpenDraftCollectionViewCell)?.snapshotView = snapshot
         
-        if snapshots?.count > 0 {
+        if (snapshots?.count ?? 0) > 0 {
             snapshots?[0] = snapshot
         }
     }
