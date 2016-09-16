@@ -17,7 +17,6 @@ import UIKit
 @objc(SEUIDraftTransitioningDelegate) open class DraftTransitioningDelegate : NSObject, UIViewControllerTransitioningDelegate {
     
     open func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        guard let presenting = presenting else { return nil }
         return DraftPresentationController(presentedViewController: presented, presenting: presenting)
     }
     
