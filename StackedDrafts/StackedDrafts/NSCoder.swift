@@ -16,7 +16,7 @@ private class SafeWrapper : NSObject, NSCoding {
     }
     
     @objc required convenience init?(coder aDecoder: NSCoder) {
-        self.init(coder: aDecoder.decodeObject(forKey: "value") as! NSCoder)
+        self.init(value: aDecoder.decodeObject(forKey: "value"))
     }
     
     @objc func encode(with aCoder: NSCoder) {
