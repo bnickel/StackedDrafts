@@ -76,7 +76,14 @@ class OpenDraftSelectorViewController: UIViewController {
         guard let viewController = draftViewController as? UIViewController else { preconditionFailure() }
         viewController.view.frame = UIEdgeInsetsInsetRect(view.bounds, DraftPresentationController.presentedInsets)
         viewController.view.layoutIfNeeded()
-        return viewController.view.snapshotView(afterScreenUpdates: true)!
+        if let snapshot = viewController.view.snapshotView(afterScreenUpdates: true) {
+            return snapshot
+        } else {
+            let snapshot = UIView(frame: viewController.view.bounds)
+            snapshot.backgroundColor = .white
+            return snapshot
+        }
+
     }
     
     var snapshots:[UIView?]? = nil
