@@ -31,6 +31,10 @@ class OpenDraftSelectorViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     override var preferredStatusBarStyle : UIStatusBarStyle {
         return .lightContent
     }
@@ -65,11 +69,19 @@ class OpenDraftSelectorViewController: UIViewController {
             panGestureRecognizer.delegate = self
             collectionView.addGestureRecognizer(panGestureRecognizer)
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.applicationBecameActive(_:)), name: .UIApplicationDidBecomeActive, object: nil)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         loadSnapshotsIfNeeded(animated: false)
+    }
+    
+    @objc private func applicationBecameActive(_ notification: Notification) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { 
+            self.loadSnapshotsIfNeeded(animated: true)
+        }
     }
     
     func render(_ draftViewController:DraftViewControllerProtocol) -> UIView {
@@ -89,23 +101,27 @@ class OpenDraftSelectorViewController: UIViewController {
     var snapshots:[UIView?]? = nil
     
     func loadSnapshotsIfNeeded(animated:Bool) {
-        guard snapshots == nil else { return }
+        guard self.snapshots == nil else { return }
         if source?.view.window == nil {
             source?.view.frame = view.frame
             source?.view.layoutIfNeeded()
         }
-        snapshots = [source?.view.snapshotView(afterScreenUpdates: true)] + selectableViewControllers.map(render)
+        let snapshots = [source?.view.snapshotView(afterScreenUpdates: true)] + selectableViewControllers.map(render)
         
         for indexPath in collectionView.indexPathsForVisibleItems {
-            (collectionView.cellForItem(at: indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots?[(indexPath as NSIndexPath).item]
+            (collectionView.cellForItem(at: indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots[(indexPath as NSIndexPath).item]
         }
         
         if animated {
-            let realSnapshots = snapshots?.flatMap({$0}) ?? []
+            let realSnapshots = snapshots.flatMap({$0})
             for snapshot in realSnapshots { snapshot.alpha = 0 }
             UIView.animate(withDuration: 0.25, animations: {
                 for snapshot in realSnapshots { snapshot.alpha = 1 }
             }) 
+        }
+        
+        if UIApplication.shared.applicationState == .active {
+            self.snapshots = snapshots
         }
     }
     
@@ -149,7 +165,29 @@ class OpenDraftSelectorViewController: UIViewController {
         }
     }
     
+    private var backgroundTransitionOriginalState: (size: CGSize, snapshots: [UIView?]?)?
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        
+        // When iPad applications enter the background, they take a snapshot, rotate, take another snapshot, and rotate back.
+        // For this very specific use case, we'll save the original snapshots so we can reuse them when we get back to the original state.
+        if UIApplication.shared.applicationState == .background {
+            
+            if let originalState = backgroundTransitionOriginalState, originalState.size == size {
+                backgroundTransitionOriginalState = nil
+                snapshots = originalState.snapshots
+                coordinator.animate(alongsideTransition: nil, completion: { context in
+                    self.collectionView.reloadData()
+                })
+                return
+            } else {
+                backgroundTransitionOriginalState = (view.bounds.size, snapshots)
+            }
+        } else {
+            backgroundTransitionOriginalState = nil
+        }
+        
+        
         snapshots = nil
         forEachVisibleCell({ $0.snapshotView = nil })
         coordinator.animate(alongsideTransition: nil, completion: { context in
