@@ -33,11 +33,14 @@ private class SafeWrapper : NSObject, NSCoding {
 }
 
 extension NSCoder {
-    func encodeSafeArray(_ array:[AnyObject], forKey key:String) {
+    
+    // Marked @nonobjc to avoid dynamic dispatch on unprefixed method.
+    
+    @nonobjc func encodeSafeArray(_ array:[AnyObject], forKey key:String) {
         encode(SafeWrapper.wrapArray(array), forKey: key)
     }
     
-    func decodeSafeArrayForKey<T: AnyObject>(_ key:String) -> [T] {
+    @nonobjc func decodeSafeArrayForKey<T: AnyObject>(_ key:String) -> [T] {
         return SafeWrapper.unwrapArray(decodeObject(forKey: key))
     }
 }
