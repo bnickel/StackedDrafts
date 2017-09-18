@@ -8,7 +8,7 @@
 
 import Foundation
 
-private class SafeWrapper : NSObject, NSCoding {
+@objc(StackedDrafts_SafeWrapper) private class SafeWrapper : NSObject, NSCoding {
     var value:Any?
     
     init(value:Any?) {
