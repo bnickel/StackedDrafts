@@ -19,44 +19,44 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
     static var count = 0
     static func getIndex() -> Int { count += 1; return count }
     
-    private(set) lazy var draftTitle: String? = "New Message \(DraftViewController.getIndex())"
+    fileprivate(set) lazy var draftTitle: String? = "New Message \(DraftViewController.getIndex())"
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        restorationIdentifier = NSUUID().UUIDString
+        restorationIdentifier = UUID().uuidString
         restorationClass = DraftViewController.self
         transitioningDelegate = DraftViewController.sharedDelegate
-        modalPresentationStyle = .Custom
+        modalPresentationStyle = .custom
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         let orangeView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 10))
-        orangeView.backgroundColor = .orangeColor()
+        orangeView.backgroundColor = .orange
         textField.inputAccessoryView = orangeView
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 }
 
 extension DraftViewController: UIViewControllerRestoration {
-    static func viewControllerWithRestorationIdentifierPath(identifierComponents: [AnyObject], coder: NSCoder) -> UIViewController? {
-        guard let storyboard = coder.decodeObjectForKey(UIStateRestorationViewControllerStoryboardKey) as? UIStoryboard else { return nil }
-        let viewController = storyboard.instantiateViewControllerWithIdentifier("presented")
+    static func viewController(withRestorationIdentifierPath identifierComponents: [Any], coder: NSCoder) -> UIViewController? {
+        guard let storyboard = coder.decodeObject(forKey: UIStateRestorationViewControllerStoryboardKey) as? UIStoryboard else { return nil }
+        let viewController = storyboard.instantiateViewController(withIdentifier: "presented")
         viewController.restorationIdentifier = identifierComponents.last as? String
         return viewController
     }
     
-    override func encodeRestorableStateWithCoder(coder: NSCoder) {
-        super.encodeRestorableStateWithCoder(coder)
-        coder.encodeObject(draftTitle, forKey: "title")
-        coder.encodeInteger(DraftViewController.count, forKey: "count")
+    override func encodeRestorableState(with coder: NSCoder) {
+        super.encodeRestorableState(with: coder)
+        coder.encode(draftTitle, forKey: "title")
+        coder.encode(DraftViewController.count, forKey: "count")
     }
     
-    override func decodeRestorableStateWithCoder(coder: NSCoder) {
-        draftTitle = coder.decodeObjectForKey("title") as? String
-        DraftViewController.count = coder.decodeIntegerForKey("count")
+    override func decodeRestorableState(with coder: NSCoder) {
+        draftTitle = coder.decodeObject(forKey: "title") as? String
+        DraftViewController.count = coder.decodeInteger(forKey: "count")
     }
 }

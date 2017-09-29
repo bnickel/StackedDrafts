@@ -14,7 +14,7 @@ class PresentingViewController: UIViewController {
     @IBAction func done(segue: UIStoryboardSegue) { }
     
     @IBAction func minimize(segue: UIStoryboardSegue) {
-        segue.sourceViewController.draftPresentationController?.shouldMinimize = true
+        segue.source.draftPresentationController?.shouldMinimize = true
     }
     
     @IBAction func draftRequested() {
