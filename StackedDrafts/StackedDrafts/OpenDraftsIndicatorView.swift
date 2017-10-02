@@ -18,15 +18,15 @@ import UIKit
 @IBDesignable
 open class OpenDraftsIndicatorView: UIControl {
     
-    @IBOutlet fileprivate var contentView: UIView!
-    @IBOutlet fileprivate var mostRecentDraftTopConstraint: NSLayoutConstraint!
-    @IBOutlet fileprivate var mostRecentDraftView: OpenDraftHeaderOverlayView!
-    @IBOutlet fileprivate var secondDraftView: UIView!
-    @IBOutlet fileprivate var thirdDraftView: UIView!
+    @IBOutlet private var contentView: UIView!
+    @IBOutlet private var mostRecentDraftTopConstraint: NSLayoutConstraint!
+    @IBOutlet private var mostRecentDraftView: OpenDraftHeaderOverlayView!
+    @IBOutlet private var secondDraftView: UIView!
+    @IBOutlet private var thirdDraftView: UIView!
     
-    fileprivate static let displayedHeight:CGFloat = 44
-    fileprivate var heightConstraint:NSLayoutConstraint!
-    fileprivate var intrinsicHeight:CGFloat = 0 { didSet { heightConstraint.constant = intrinsicHeight } }
+    private static let displayedHeight: CGFloat = 44
+    private var heightConstraint: NSLayoutConstraint!
+    private var intrinsicHeight: CGFloat = 0 { didSet { heightConstraint.constant = intrinsicHeight } }
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,7 +50,7 @@ open class OpenDraftsIndicatorView: UIControl {
         NotificationCenter.default.removeObserver(self)
     }
     
-    fileprivate func loadContentView() {
+    private func loadContentView() {
         UINib(nibName: "OpenDraftsIndicatorView.contentView", bundle: Bundle(for: OpenDraftsIndicatorView.self)).instantiate(withOwner: self, options: nil)
         
         heightConstraint = attr(self, .height) == intrinsicHeight
@@ -65,7 +65,7 @@ open class OpenDraftsIndicatorView: UIControl {
             heightConstraint
         ])
         
-        NotificationCenter.default.addObserver(self, selector: #selector(didUpdateOpenDraftingControllers(_:)), name: OpenDraftsManager.notifications.didUpdateOpenDraftingControllers, object: OpenDraftsManager.sharedInstance)
+        NotificationCenter.default.addObserver(self, selector: #selector(didUpdateOpenDraftingControllers(_:)), name: .openDraftsManagerDidUpdateOpenDraftingControllers, object: OpenDraftsManager.shared)
     }
     
     override open var accessibilityLabel: String? {
@@ -78,15 +78,15 @@ open class OpenDraftsIndicatorView: UIControl {
         get { return super.accessibilityHint ?? customAccessibilityHint }
     }
     
-    fileprivate var customAccessibilityLabel:String? = nil
-    fileprivate var customAccessibilityHint:String? = nil
+    private var customAccessibilityLabel: String? = nil
+    private var customAccessibilityHint: String? = nil
     
-    @objc fileprivate func didUpdateOpenDraftingControllers(_: Notification?) {
-        let openDrafts = OpenDraftsManager.sharedInstance.openDraftingViewControllers
+    @objc private func didUpdateOpenDraftingControllers(_: Notification?) {
+        let openDrafts = OpenDraftsManager.shared.openDraftingViewControllers
         setMostRecentDraftTitle(openDrafts.last?.draftTitle, numberOfOpenDrafts: openDrafts.count)
     }
     
-    fileprivate func setMostRecentDraftTitle(_ mostRecentDraftTitle:String?, numberOfOpenDrafts:Int) {
+    private func setMostRecentDraftTitle(_ mostRecentDraftTitle:String?, numberOfOpenDrafts:Int) {
         mostRecentDraftView.labelText = mostRecentDraftTitle
         secondDraftView.isHidden = numberOfOpenDrafts < 2
         thirdDraftView.isHidden = numberOfOpenDrafts < 3

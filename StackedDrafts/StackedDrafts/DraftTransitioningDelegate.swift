@@ -42,7 +42,7 @@ import UIKit
      - Returns: The UIView to display.
      
      */
-    open func simulatedPresentingView(for presentingViewController:UIViewController) -> UIView {
+    open func simulatedPresentingView(for presentingViewController: UIViewController) -> UIView {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         view.backgroundColor = presentingViewController.view.backgroundColor
         if let navigationController = presentingViewController as? UINavigationController , !navigationController.isNavigationBarHidden {

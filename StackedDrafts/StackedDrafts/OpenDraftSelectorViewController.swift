@@ -13,11 +13,11 @@ class OpenDraftSelectorViewController: UIViewController {
     fileprivate let normalLayout = AllDraftsCollectionViewLayout()
     fileprivate let initialLayout = PresenterSelectedLayout()
     fileprivate let draftSelectedLayout = DraftSelectedCollectionViewLayout()
-    fileprivate var selectableViewControllers:[DraftViewControllerProtocol] = []
+    private var selectableViewControllers: [UIViewController & DraftViewControllerProtocol] = []
     
-    fileprivate var lastPanTimestamp:TimeInterval = 0
+    private var lastPanTimestamp: TimeInterval = 0
     
-    fileprivate var collectionView:UICollectionView!
+    fileprivate var collectionView: UICollectionView!
     
     weak var source: UIViewController?
     
@@ -56,7 +56,7 @@ class OpenDraftSelectorViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         OpenDraftCollectionViewCell.register(with: collectionView)
-        selectableViewControllers = OpenDraftsManager.sharedInstance.openDraftingViewControllers
+        selectableViewControllers = OpenDraftsManager.shared.openDraftingViewControllers
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.reloadData()
@@ -84,7 +84,7 @@ class OpenDraftSelectorViewController: UIViewController {
         }
     }
     
-    func render(_ draftViewController:DraftViewControllerProtocol) -> UIView {
+    func render(_ draftViewController: DraftViewControllerProtocol) -> UIView {
         guard let viewController = draftViewController as? UIViewController else { preconditionFailure() }
         viewController.view.frame = UIEdgeInsetsInsetRect(view.bounds, DraftPresentationController.presentedInsets)
         viewController.view.layoutIfNeeded()
@@ -98,9 +98,9 @@ class OpenDraftSelectorViewController: UIViewController {
 
     }
     
-    var snapshots:[UIView?]? = nil
+    var snapshots: [UIView?]? = nil
     
-    func loadSnapshotsIfNeeded(animated:Bool) {
+    func loadSnapshotsIfNeeded(animated: Bool) {
         guard self.snapshots == nil else { return }
         if source?.view.window == nil {
             source?.view.frame = view.frame
@@ -109,7 +109,7 @@ class OpenDraftSelectorViewController: UIViewController {
         let snapshots = [source?.view.snapshotView(afterScreenUpdates: true)] + selectableViewControllers.map(render)
         
         for indexPath in collectionView.indexPathsForVisibleItems {
-            (collectionView.cellForItem(at: indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots[(indexPath as NSIndexPath).item]
+            (collectionView.cellForItem(at: indexPath) as? OpenDraftCollectionViewCell)?.snapshotView = snapshots[indexPath.item]
         }
         
         if animated {
@@ -134,12 +134,12 @@ class OpenDraftSelectorViewController: UIViewController {
         }
     }
     
-    fileprivate func animateSwitchToLayout(_ layout:UICollectionViewLayout, almostParallelAnimation:(() -> Void)?, parallelAtEnd:Bool, completion:(() -> Void)?) {
+    fileprivate func animateSwitchToLayout(_ layout: UICollectionViewLayout, almostParallelAnimation: (() -> Void)?, parallelAtEnd: Bool, completion: (() -> Void)?) {
         
         view.layer.speed = 0.75
         
         var needed = 1
-        func tryComplete(_:Bool) {
+        func tryComplete(_: Bool) {
             needed -= 1
             if needed == 0 {
                 view.layer.speed = 1
@@ -195,23 +195,23 @@ class OpenDraftSelectorViewController: UIViewController {
         })
     }
     
-    fileprivate func removeViewController(at indexPath:IndexPath) {
-        guard (indexPath as NSIndexPath).item != 0 else { return }
+    private func removeViewController(at indexPath: IndexPath) {
+        guard indexPath.item != 0 else { return }
         
         if selectableViewControllers.count > 1 {
-            let removed = selectableViewControllers.remove(at: (indexPath as NSIndexPath).item - 1)
+            let removed = selectableViewControllers.remove(at: indexPath.item - 1)
             _ = snapshots?.remove(at: indexPath.item)
             collectionView.deleteItems(at: [indexPath])
-            OpenDraftsManager.sharedInstance.remove(removed)
+            OpenDraftsManager.shared.remove(removed)
         } else {
-            OpenDraftsManager.sharedInstance.remove(selectableViewControllers[0])
+            OpenDraftsManager.shared.remove(selectableViewControllers[0])
             dismiss(animated: true, completion: nil)
         }
     }
     
-    fileprivate func removeViewController(from cell:UICollectionViewCell) {
+    private func removeViewController(from cell: UICollectionViewCell) {
         guard let indexPath = collectionView.indexPath(for: cell) else { return }
-        self.removeViewController(at:indexPath)
+        self.removeViewController(at: indexPath)
     }
 }
 
@@ -224,7 +224,7 @@ extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
         switch gestureRecognizer.state {
         case .began:
             lastPanTimestamp = now
-            if let indexPath = collectionView.indexPathForItem(at: gestureRecognizer.location(in: collectionView)) , (indexPath as NSIndexPath).item != 0 {
+            if let indexPath = collectionView.indexPathForItem(at: gestureRecognizer.location(in: collectionView)) , indexPath.item != 0 {
                 normalLayout.pannedItem = PannedItem(indexPath: indexPath, translation: gestureRecognizer.translation(in: collectionView))
             }
             
@@ -255,7 +255,7 @@ extension OpenDraftSelectorViewController : UIGestureRecognizerDelegate {
         
         let velocity = gestureRecognizer.velocity(in: collectionView)
         guard abs(velocity.x) > abs(velocity.y) else { return false }
-        guard let indexPath = collectionView.indexPathForItem(at: gestureRecognizer.location(in: collectionView)) , (indexPath as NSIndexPath).item != 0 else { return false }
+        guard let indexPath = collectionView.indexPathForItem(at: gestureRecognizer.location(in: collectionView)) , indexPath.item != 0 else { return false }
         
         return true
     }
@@ -273,13 +273,13 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let view = OpenDraftCollectionViewCell.cell(at: indexPath, collectionView: collectionView)
-        view.snapshotView = snapshots?[(indexPath as NSIndexPath).item]
+        view.snapshotView = snapshots?[indexPath.item]
         
-        if (indexPath as NSIndexPath).item == 0 {
+        if indexPath.item == 0 {
             view.showHeader = false
         } else {
             view.showHeader = true
-            view.draftTitle = selectableViewControllers[(indexPath as NSIndexPath).item - 1].draftTitle
+            view.draftTitle = selectableViewControllers[indexPath.item - 1].draftTitle
         }
         
         view.closeTapped = removeViewController(from:)
@@ -288,21 +288,21 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard (indexPath as NSIndexPath).item != 0 else {
+        guard indexPath.item != 0 else {
             presentingViewController?.dismiss(animated: true, completion: nil)
             return
         }
         
-        guard let viewController = self.selectableViewControllers[(indexPath as NSIndexPath).item - 1] as? UIViewController else { return }
+        let viewController = self.selectableViewControllers[indexPath.item - 1]
         
-        draftSelectedLayout.selectedIndex = (indexPath as NSIndexPath).item
+        draftSelectedLayout.selectedIndex = indexPath.item
         animateSwitchToLayout(draftSelectedLayout, almostParallelAnimation: {
             self.forEachVisibleCell({
                 $0.showHeader = false
                 $0.showGradientView = false
             })
         }, parallelAtEnd: false, completion: {
-            self.swapForViewController(viewController)
+            self.swap(for: viewController)
         })
     }
     
@@ -311,7 +311,7 @@ extension OpenDraftSelectorViewController : UICollectionViewDataSource, UICollec
      
      Something specific in iOS8+ triggers a rendering to occur between subsequent transitions so the best thing I've come up with is putting a snapshot of the view over the the whole window until the transition completes.
     */
-    fileprivate func swapForViewController(_ viewController:UIViewController) {
+    private func swap(for viewController: UIViewController) {
         
         guard let presentingViewController = presentingViewController, let window = view.window else { return }
         let snapshot = view.snapshotView(afterScreenUpdates: true)
@@ -453,15 +453,15 @@ extension OpenDraftSelectorViewController : UIViewControllerRestoration {
 
 extension UIViewController {
     
-    @nonobjc var hasRestorationSource:Bool {
+    @nonobjc var hasRestorationSource: Bool {
         return restorationClass != nil || storyboard != nil
     }
     
-    @nonobjc var isRestorationEligible:Bool {
+    @nonobjc var isRestorationEligible: Bool {
         return hasRestorationSource && restorationIdentifier != nil
     }
     
-    @nonobjc func setRestorationIdentifier(_ restorationIdentifier:String, contingentOnViewController previousViewController:UIViewController) {
+    @nonobjc func setRestorationIdentifier(_ restorationIdentifier: String, contingentOnViewController previousViewController: UIViewController) {
         if previousViewController.isRestorationEligible && hasRestorationSource {
             self.restorationIdentifier = restorationIdentifier
         } else {

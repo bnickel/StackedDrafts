@@ -8,6 +8,11 @@
 
 import UIKit
 
+extension Notification.Name {
+    static let openDraftsManagerDidUpdateOpenDraftingControllers = NSNotification.Name(rawValue: "OpenDraftsManager.notifications.didUpdateOpenDraftingControllers")
+    
+}
+
 /**
  This singleton class keeps track of all view controllers conforming to `DraftViewControllerProtocol` that are either presented or minimized.  When a change is observed in automatically updates the appearance of all instances of `OpenDraftsIndicatorViews`.
  
@@ -15,20 +20,16 @@ import UIKit
  */
 @objc(SEUIOpenDraftsManager) open class OpenDraftsManager : NSObject {
     
-    open static let sharedInstance:OpenDraftsManager = {
+    @objc(sharedInstance) open static let shared: OpenDraftsManager = {
         let manager = OpenDraftsManager()
         UIApplication.registerObject(forStateRestoration: manager, restorationIdentifier: "OpenDraftsManager.sharedInstance")
         return manager
     }()
     
-    struct notifications {
-        static let didUpdateOpenDraftingControllers = NSNotification.Name(rawValue: "OpenDraftsManager.notifications.didUpdateOpenDraftingControllers")
-    }
-    
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(didPresent(_:)), name: DraftPresentationController.notifications.didPresentDraftViewController, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(willDismissNonInteractive(_:)), name: DraftPresentationController.notifications.willDismissNonInteractiveDraftViewController, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didPresent(_:)), name: .draftPresentationControllerDidPresentDraftViewController, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(willDismissNonInteractive(_:)), name: .draftPresentationControllerWillDismissNonInteractiveDraftViewController, object: nil)
     }
     
     deinit {
@@ -36,19 +37,19 @@ import UIKit
     }
     
     /// All instances of `DraftViewControllerProtocol` either presented or minimized.
-    fileprivate(set) open var openDraftingViewControllers:[DraftViewControllerProtocol] = [] { didSet { notify() } }
+    private(set) open var openDraftingViewControllers: [UIViewController & DraftViewControllerProtocol] = [] { didSet { notify() } }
     
-    fileprivate func notify() {
-        NotificationCenter.default.post(name: Notification.Name(rawValue: notifications.didUpdateOpenDraftingControllers.rawValue), object: self, userInfo: nil)
+    private func notify() {
+        NotificationCenter.default.post(name: .openDraftsManagerDidUpdateOpenDraftingControllers, object: self, userInfo: nil)
     }
     
-    @objc fileprivate func didPresent(_ notification:Notification) {
-        guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController] as? DraftViewControllerProtocol else { return }
+    @objc private func didPresent(_ notification: Notification) {
+        guard let viewController = notification.presentedDraftViewController else { return }
         add(viewController)
     }
     
-    @objc fileprivate func willDismissNonInteractive(_ notification:Notification) {
-        guard let viewController = notification.userInfo?[DraftPresentationController.notifications.keys.viewController] as? DraftViewControllerProtocol else { return }
+    @objc private func willDismissNonInteractive(_ notification: Notification) {
+        guard let viewController = notification.presentedDraftViewController else { return }
         remove(viewController)
     }
     
@@ -67,17 +68,17 @@ import UIKit
             let viewController = OpenDraftSelectorViewController()
             viewController.setRestorationIdentifier("open-drafts", contingentOnViewController: presentingViewController)
             presentingViewController.present(viewController, animated: animated, completion: completion)
-        } else if let viewController = self.openDraftingViewControllers.last as? UIViewController {
+        } else if let viewController = openDraftingViewControllers.last {
             presentingViewController.present(viewController, animated: animated, completion: completion)
             viewController.draftPresentationController?.hasBeenPresented = true
         }
     }
     
-    open func add(_ viewController:DraftViewControllerProtocol) {
+    open func add(_ viewController: UIViewController & DraftViewControllerProtocol) {
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController }) + [viewController]
     }
     
-    open func remove(_ viewController:DraftViewControllerProtocol) {
+    open func remove(_ viewController: UIViewController & DraftViewControllerProtocol) {
         openDraftingViewControllers = openDraftingViewControllers.filter({ $0 !== viewController })
     }
 }
@@ -89,7 +90,7 @@ extension OpenDraftsManager : UIStateRestoring, UIObjectRestoration {
     }
     
     public static func object(withRestorationIdentifierPath identifierComponents: [String], coder: NSCoder) -> UIStateRestoring? {
-        return OpenDraftsManager.sharedInstance
+        return shared
     }
     
     public func encodeRestorableState(with coder: NSCoder) {

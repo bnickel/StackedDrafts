@@ -8,10 +8,10 @@
 
 import UIKit
 
-class PresenterSelectedLayout : UICollectionViewLayout {
+class PresenterSelectedLayout: UICollectionViewLayout {
     
-    fileprivate var allAttributes:[UICollectionViewLayoutAttributes] = []
-    fileprivate var contentSize = CGSize.zero
+    private var allAttributes: [UICollectionViewLayoutAttributes] = []
+    private var contentSize: CGSize = .zero
     
     override func prepare() {
         
@@ -32,7 +32,7 @@ class PresenterSelectedLayout : UICollectionViewLayout {
         for i in 1 ..< count {
             let indexPath = IndexPath(item: i, section: 0)
             let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-            attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)), size: size)
+            attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)), size: size)
             attributes.zIndex = i
             allAttributes.append(attributes)
         }
@@ -41,7 +41,7 @@ class PresenterSelectedLayout : UICollectionViewLayout {
         self.contentSize = size
     }
     
-    override var collectionViewContentSize : CGSize {
+    override var collectionViewContentSize: CGSize {
         return contentSize
     }
     

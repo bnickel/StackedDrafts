@@ -9,9 +9,9 @@
 import Foundation
 
 @objc(StackedDrafts_SafeWrapper) private class SafeWrapper : NSObject, NSCoding {
-    var value:Any?
+    var value: Any?
     
-    init(value:Any?) {
+    init(value: Any?) {
         self.value = value
     }
     
@@ -23,11 +23,11 @@ import Foundation
         aCoder.encode(value, forKey: "value")
     }
     
-    static func wrapArray(_ array:[Any]) -> Any {
+    static func wrapArray(_ array: [Any]) -> Any {
         return array.map(SafeWrapper.init(value:)) as NSArray
     }
     
-    static func unwrapArray<T : AnyObject>(_ array:Any?) -> [T] {
+    static func unwrapArray<T : AnyObject>(_ array: Any?) -> [T] {
         return (array as? [SafeWrapper])?.flatMap({ $0.value as? T }) ?? []
     }
 }
@@ -36,11 +36,11 @@ extension NSCoder {
     
     // Marked @nonobjc to avoid dynamic dispatch on unprefixed method.
     
-    @nonobjc func encodeSafeArray(_ array:[AnyObject], forKey key:String) {
+    @nonobjc func encodeSafeArray(_ array: [AnyObject], forKey key: String) {
         encode(SafeWrapper.wrapArray(array), forKey: key)
     }
     
-    @nonobjc func decodeSafeArrayForKey<T: AnyObject>(_ key:String) -> [T] {
+    @nonobjc func decodeSafeArrayForKey<T: AnyObject>(_ key: String) -> [T] {
         return SafeWrapper.unwrapArray(decodeObject(forKey: key))
     }
 }

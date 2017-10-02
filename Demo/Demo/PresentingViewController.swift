@@ -18,7 +18,7 @@ class PresentingViewController: UIViewController {
     }
     
     @IBAction func draftRequested() {
-        OpenDraftsManager.sharedInstance.presentDraft(from: self, animated: true)
+        OpenDraftsManager.shared.presentDraft(from: self, animated: true)
     }
 }
 

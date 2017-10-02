@@ -13,18 +13,18 @@ func * (a: CATransform3D, b: CATransform3D) -> CATransform3D {
 }
 
 struct PannedItem {
-    let indexPath:IndexPath
-    var translation:CGPoint
+    let indexPath: IndexPath
+    var translation: CGPoint
 }
 
 class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     
-    fileprivate var allAttributes:[UICollectionViewLayoutAttributes] = []
-    fileprivate var contentSize = CGSize.zero
-    fileprivate var changingBounds = false
+    private var allAttributes: [UICollectionViewLayoutAttributes] = []
+    private var contentSize: CGSize = .zero
+    private var changingBounds = false
     
-    var pannedItem:PannedItem? { didSet { invalidateLayout() } }
-    @NSCopying var lastPannedItemAttributes:UICollectionViewLayoutAttributes?
+    var pannedItem: PannedItem? { didSet { invalidateLayout() } }
+    @NSCopying var lastPannedItemAttributes: UICollectionViewLayoutAttributes?
     var deletingPannedItem = false
     
     override func prepare() {
@@ -40,14 +40,14 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         let clampedCount = max(2, min(count, 5))
         let verticalGap = (size.height - 80) / CGFloat(clampedCount)
         
-        let angleInDegrees:CGFloat
+        let angleInDegrees: CGFloat
         switch clampedCount {
         case 2:  angleInDegrees = 30
         case 3:  angleInDegrees = 45
         default: angleInDegrees = 61
         }
         
-        var allAttributes:[UICollectionViewLayoutAttributes] = []
+        var allAttributes: [UICollectionViewLayoutAttributes] = []
         
         for i in 0 ..< count {
             
@@ -60,7 +60,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
             attributes.transform3D = rotateDown(degrees: angleInDegrees, itemHeight: size.height, scale: scale)
             attributes.center = topCenter
             
-            let gapMultiplier:CGFloat
+            let gapMultiplier: CGFloat
             if let pannedItem = pannedItem, pannedItem.indexPath.item == i {
                 let delta = pannedItem.translation.x
                 if delta > 0 {
@@ -86,9 +86,9 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
         }
     }
     
-    fileprivate func rotateDown(degrees angleInDegrees:CGFloat, itemHeight:CGFloat, scale:CGFloat) -> CATransform3D {
+    private func rotateDown(degrees angleInDegrees: CGFloat, itemHeight: CGFloat, scale: CGFloat) -> CATransform3D {
         
-        let angleOfRotation:CGFloat = (-angleInDegrees / 180) * 3.1415926535
+        let angleOfRotation: CGFloat = (-angleInDegrees / 180) * .pi
         let rotation = CATransform3DMakeRotation(angleOfRotation, 1, 0, 0)
         
         let translateDown = CATransform3DMakeTranslation(0, itemHeight / 2, 0)
@@ -127,7 +127,7 @@ class AllDraftsCollectionViewLayout : UICollectionViewLayout {
     }
     
     override func initialLayoutAttributesForAppearingItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        return allAttributes.indices.contains((indexPath as NSIndexPath).item) && !changingBounds ? allAttributes[(indexPath as NSIndexPath).item] : nil
+        return allAttributes.indices.contains(indexPath.item) && !changingBounds ? allAttributes[indexPath.item] : nil
     }
     
     override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath) -> UICollectionViewLayoutAttributes? {

@@ -10,9 +10,9 @@ import UIKit
 
 final class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     
-    let interactiveTransitioning:UIViewControllerInteractiveTransitioning?
+    let interactiveTransitioning: UIViewControllerInteractiveTransitioning?
     
-    init(interactiveTransitioning:UIViewControllerInteractiveTransitioning?) {
+    init(interactiveTransitioning: UIViewControllerInteractiveTransitioning?) {
         self.interactiveTransitioning = interactiveTransitioning
         super.init()
     }
@@ -20,7 +20,7 @@ final class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnima
     /**
      Sooo... in iOS 8 if the gap between `updateInteractiveTransition` and `finishInteractiveTransition` is below transitionDuration (with some amount of wiggle room), the animation's completion block will never call.  This hack drops the duration really low on iOS 8, then cranks down the interaction completion speed to compensate.
      */
-    static var hackDuration:TimeInterval {
+    static var hackDuration: TimeInterval {
         if #available(iOS 9, *) {
             return normalDuration
         } else {
@@ -28,7 +28,7 @@ final class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnima
         }
     }
     
-    static let normalDuration:TimeInterval = 0.3
+    static let normalDuration: TimeInterval = 0.3
     
     static var interactiveCompletionSpeed: CGFloat {
         return CGFloat(hackDuration / normalDuration)
@@ -41,7 +41,7 @@ final class DraftDismissalAnimatedTransitioning: NSObject, UIViewControllerAnima
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         
         let duration = transitionDuration(using: transitionContext)
-        let animationOptions:UIViewAnimationOptions = interactiveTransitioning != nil ? .curveLinear : UIViewAnimationOptions()
+        let animationOptions: UIViewAnimationOptions = interactiveTransitioning != nil ? .curveLinear : []
         
         let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)!
         let fromView = transitionContext.view(forKey: UITransitionContextViewKey.from)!

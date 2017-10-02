@@ -29,11 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let storyboard = window?.rootViewController?.storyboard {
             
             for _ in 0 ..< viewControllersToInstantiate {
-                if let presented = storyboard.instantiateViewController(withIdentifier: "presented") as? DraftViewControllerProtocol {
-                    OpenDraftsManager.sharedInstance.add(presented)
+                if let presented = storyboard.instantiateViewController(withIdentifier: "presented") as? (UIViewController & DraftViewControllerProtocol) {
+                    OpenDraftsManager.shared.add(presented)
                 }
             }
-            
         }
     }
     
@@ -46,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, willEncodeRestorableStateWith coder: NSCoder) {
-        coder.encode(OpenDraftsManager.sharedInstance)
+        coder.encode(OpenDraftsManager.shared)
     }
 }
 

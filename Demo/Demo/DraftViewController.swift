@@ -19,7 +19,7 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
     static var count = 0
     static func getIndex() -> Int { count += 1; return count }
     
-    fileprivate(set) lazy var draftTitle: String? = "New Message \(DraftViewController.getIndex())"
+    private(set) lazy var draftTitle: String? = "New Message \(DraftViewController.getIndex())"
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -27,6 +27,7 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
         restorationClass = DraftViewController.self
         transitioningDelegate = DraftViewController.sharedDelegate
         modalPresentationStyle = .custom
+        modalPresentationCapturesStatusBarAppearance = true
     }
     
     override func viewDidLoad() {

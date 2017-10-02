@@ -9,34 +9,38 @@
 import UIKit
 
 @objc(SEUIDraftViewControllerProtocol) public protocol DraftViewControllerProtocol : NSObjectProtocol {
-    var draggableView:UIView? { get }
-    var draftTitle:String? { get }
+    var draggableView: UIView? { get }
+    var draftTitle: String? { get }
+}
+
+public extension Notification.Name {
+    static let draftPresentationControllerDidPresentDraftViewController = Notification.Name(rawValue: "DraftPresentationController.notifications.didPresentDraftViewController")
+    static let draftPresentationControllerWillDismissNonInteractiveDraftViewController = Notification.Name(rawValue: "DraftPresentationController.notifications.willDismissNonInteractiveDraftViewController")
+}
+
+private let DraftPresentationControllerViewControllerKey = "viewController"
+
+public extension Notification {
+    var presentedDraftViewController: (UIViewController & DraftViewControllerProtocol)? {
+        return userInfo?[DraftPresentationControllerViewControllerKey] as? (UIViewController & DraftViewControllerProtocol)
+    }
 }
 
 @objc(SEUIDraftPresentationController) open class DraftPresentationController : UIPresentationController {
+
+    open var shouldMinimize = false
+    var interactiveTransitioning: UIPercentDrivenInteractiveTransition? = nil
+    private lazy var interactiveDismissalGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
+    private var lastInteractionTimestamp: TimeInterval = 0
     
-    enum notifications {
-        static let didPresentDraftViewController = Notification.Name(rawValue: "DraftPresentationController.notifications.didPresentDraftViewController")
-        static let willDismissNonInteractiveDraftViewController = Notification.Name(rawValue: "DraftPresentationController.notifications.willDismissNonInteractiveDraftViewController")
-        
-        enum keys {
-            static let viewController = "viewController"
-        }
-    }
-    
-    open var shouldMinimize:Bool = false
-    var interactiveTransitioning:UIPercentDrivenInteractiveTransition? = nil
-    fileprivate lazy var interactiveDismissalGestureRecognizer:UIPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
-    fileprivate var lastInteractionTimestamp:TimeInterval = 0
-    
-    fileprivate let wrappingView = UIView()
-    fileprivate let accessibilityDismissalView = AccessibilityDismissalView()
-    fileprivate lazy var headerOverlayView = OpenDraftHeaderOverlayView()
-    fileprivate var simulatedPresentingView:UIView?
+    private let wrappingView = UIView()
+    private let accessibilityDismissalView = AccessibilityDismissalView()
+    private lazy var headerOverlayView = OpenDraftHeaderOverlayView()
+    private var simulatedPresentingView: UIView?
     
     var hasBeenPresented = false
     
-    open override var presentedView : UIView? {
+    open override var presentedView: UIView? {
         return wrappingView
     }
     
@@ -82,12 +86,12 @@ import UIKit
         return DraftPresentationController.isPhone
     }
     
-    fileprivate static let isPhone = UIDevice.current.userInterfaceIdiom == .phone
+    private static let isPhone = UIDevice.current.userInterfaceIdiom == .phone
     
-    class var presentedInsets:UIEdgeInsets {
+    class var presentedInsets: UIEdgeInsets {
         let application = UIApplication.shared
         let statusBarHeight = application.isStatusBarHidden ? 0 : application.statusBarFrame.height
-        let topInset:CGFloat
+        let topInset: CGFloat
         
         if isPhone {
             topInset = 20 + statusBarHeight
@@ -98,7 +102,7 @@ import UIKit
         return UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
     }
     
-    class func presenterTransform(height:CGFloat) -> CGAffineTransform {
+    class func presenterTransform(height: CGFloat) -> CGAffineTransform {
         if isPhone {
             let topInset = presentedInsets.top
             let heightReduction = 2 * topInset * 0.75
@@ -109,11 +113,11 @@ import UIKit
         }
     }
     
-    class var presenterAlpha:CGFloat { return 0.7 }
+    class var presenterAlpha: CGFloat { return 0.7 }
 }
 
 public extension UIViewController {
-    @objc(SEUI_draftPresentationController) var draftPresentationController:DraftPresentationController? {
+    @objc(SEUI_draftPresentationController) var draftPresentationController: DraftPresentationController? {
         return presentationController as? DraftPresentationController
     }
 }
@@ -121,7 +125,7 @@ public extension UIViewController {
 // MARK: - Simulated presenting view
 private extension DraftPresentationController {
     
-    func addSimulatedPresentingViewIfPresented(_ presented:Bool) {
+    func addSimulatedPresentingViewIfPresented(_ presented: Bool) {
         removeSimulatedPresentingView()
         
         guard shouldRemovePresentersView else { return }
@@ -154,23 +158,23 @@ private extension DraftPresentationController {
     
     func notifyThatDismissalWillBeginIfNonInteractive() {
         guard !shouldMinimize else { return }
-        postNotification(notifications.willDismissNonInteractiveDraftViewController)
+        postNotification(.draftPresentationControllerWillDismissNonInteractiveDraftViewController)
     }
     
     func notifyThatPresentationDidEndIfCompleted(_ completed: Bool) {
         guard completed else { return }
-        postNotification(notifications.didPresentDraftViewController)
+        postNotification(.draftPresentationControllerDidPresentDraftViewController)
     }
     
     func postNotification(_ notification: NSNotification.Name) {
-        NotificationCenter.default.post(name: notification, object: self, userInfo: [notifications.keys.viewController: presentedViewController])
+        NotificationCenter.default.post(name: notification, object: self, userInfo: [DraftPresentationControllerViewControllerKey: presentedViewController])
     }
 }
 
 // MARK: - Interactivity
 extension DraftPresentationController {
     
-    fileprivate func attachInteractiveDismissalGestureRecognizer() {
+    private func attachInteractiveDismissalGestureRecognizer() {
         guard interactiveDismissalGestureRecognizer.view == nil else { return }
         
         if let presentedViewController = presentedViewController as? DraftViewControllerProtocol {
@@ -180,7 +184,7 @@ extension DraftPresentationController {
         }
     }
     
-    @objc fileprivate func panned(_ sender : UIPanGestureRecognizer) {
+    @objc private func panned(_ sender : UIPanGestureRecognizer) {
         
         let now = Date.timeIntervalSinceReferenceDate
         
@@ -214,14 +218,14 @@ extension DraftPresentationController {
         }
     }
     
-    var presentationInset:CGFloat {
+    var presentationInset: CGFloat {
         guard hasBeenPresented && presentedViewController is DraftViewControllerProtocol else { return 0 }
-        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
+        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)
     }
     
-    var dismissalInset:CGFloat {
+    var dismissalInset: CGFloat {
         guard shouldMinimize && presentedViewController is DraftViewControllerProtocol else { return 0 }
-        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.sharedInstance.openDraftingViewControllers.count)
+        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)
     }
 }
 
@@ -237,7 +241,7 @@ private extension DraftPresentationController {
         addAlphaAnimations(initial: type(of: self).presenterAlpha, final: 1)
     }
     
-    func addAlphaAnimations(initial initialAlpha:CGFloat, final finalAlpha:CGFloat) {
+    func addAlphaAnimations(initial initialAlpha: CGFloat, final finalAlpha: CGFloat) {
         let view = presentingViewController.view
         view?.alpha = initialAlpha
         presentingViewController.transitionCoordinator?.animateAlongsideTransition(in: view, animation: { context in
@@ -250,10 +254,10 @@ private extension DraftPresentationController {
 
 private extension DraftPresentationController {
     
-    class AccessibilityDismissalView : UIView {
-        weak var presentationController:DraftPresentationController?
+    class AccessibilityDismissalView: UIView {
+        weak var presentationController: DraftPresentationController?
         
-        fileprivate override func accessibilityActivate() -> Bool {
+        override func accessibilityActivate() -> Bool {
             guard let presentationController = presentationController else { return false }
             presentationController.shouldMinimize = true
             presentationController.presentingViewController.dismiss(animated: true, completion: nil)

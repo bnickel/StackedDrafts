@@ -11,9 +11,9 @@ import UIKit
 @IBDesignable
 class OpenDraftHeaderOverlayView: UIView {
     
-    fileprivate var extraBackgroundView = UIView()
-    @IBOutlet fileprivate var contentView: UIView?
-    @IBOutlet fileprivate var label: UILabel?
+    private var extraBackgroundView = UIView()
+    @IBOutlet private var contentView: UIView?
+    @IBOutlet private var label: UILabel?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,7 +37,7 @@ class OpenDraftHeaderOverlayView: UIView {
         NotificationCenter.default.removeObserver(self)
     }
     
-    fileprivate func loadContentView() {
+    private func loadContentView() {
         UINib(nibName: "OpenDraftHeaderOverlayView.contentView", bundle: Bundle(for: OpenDraftsIndicatorView.self)).instantiate(withOwner: self, options: nil)
         guard let contentView = contentView, let label = label else { preconditionFailure() }
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +52,7 @@ class OpenDraftHeaderOverlayView: UIView {
         label.text = labelText
     }
     
-    var extraSpecialAlpha:CGFloat {
+    var extraSpecialAlpha: CGFloat {
         get {
             return extraBackgroundView.alpha
         }
@@ -64,7 +64,7 @@ class OpenDraftHeaderOverlayView: UIView {
     }
     
     @IBInspectable
-    var labelText:String? {
+    var labelText: String? {
         didSet { label?.text = labelText }
     }
     

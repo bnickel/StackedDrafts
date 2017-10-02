@@ -12,8 +12,8 @@ class DraftSelectedCollectionViewLayout: UICollectionViewLayout {
     
     var selectedIndex = 1 { didSet { invalidateLayout() } }
     
-    fileprivate var allAttributes:[UICollectionViewLayoutAttributes] = []
-    fileprivate var contentSize = CGSize.zero
+    private var allAttributes: [UICollectionViewLayoutAttributes] = []
+    private var contentSize: CGSize = .zero
     
     override func prepare() {
         
