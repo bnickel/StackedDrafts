@@ -16,8 +16,15 @@ import UIKit
  */
 @objc(SEUIDraftTransitioningDelegate) open class DraftTransitioningDelegate : NSObject, UIViewControllerTransitioningDelegate {
     
+    private let openDraftsIndicatorSource: OpenDraftsIndicatorSource
+    
+    public init(openDraftsIndicatorSource: OpenDraftsIndicatorSource) {
+        self.openDraftsIndicatorSource = openDraftsIndicatorSource
+        super.init()
+    }
+    
     open func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return DraftPresentationController(presentedViewController: presented, presenting: presenting)
+        return DraftPresentationController(presentedViewController: presented, presenting: presenting, openDraftsIndicatorSource: openDraftsIndicatorSource)
     }
     
     open func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {

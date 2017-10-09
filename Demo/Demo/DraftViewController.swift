@@ -11,8 +11,6 @@ import StackedDrafts
 
 class DraftViewController: UIViewController, DraftViewControllerProtocol {
     
-    static let sharedDelegate = DraftTransitioningDelegate()
-    
     @IBOutlet var draggableView: UIView?
     @IBOutlet var textField: UITextField!
     
@@ -25,7 +23,7 @@ class DraftViewController: UIViewController, DraftViewControllerProtocol {
         super.awakeFromNib()
         restorationIdentifier = UUID().uuidString
         restorationClass = DraftViewController.self
-        transitioningDelegate = DraftViewController.sharedDelegate
+        transitioningDelegate = DraftTransitioningDelegate.shared
         modalPresentationStyle = .custom
         modalPresentationCapturesStatusBarAppearance = true
     }
@@ -59,5 +57,6 @@ extension DraftViewController: UIViewControllerRestoration {
     override func decodeRestorableState(with coder: NSCoder) {
         draftTitle = coder.decodeObject(forKey: "title") as? String
         DraftViewController.count = coder.decodeInteger(forKey: "count")
+        transitioningDelegate = DraftTransitioningDelegate.shared
     }
 }

@@ -27,6 +27,13 @@ public extension Notification {
 }
 
 @objc(SEUIDraftPresentationController) open class DraftPresentationController : UIPresentationController {
+    
+    private let openDraftsIndicatorSource: OpenDraftsIndicatorSource
+    
+    public init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, openDraftsIndicatorSource: OpenDraftsIndicatorSource) {
+        self.openDraftsIndicatorSource = openDraftsIndicatorSource
+        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+    }
 
     open var shouldMinimize = false
     var interactiveTransitioning: UIPercentDrivenInteractiveTransition? = nil
@@ -220,12 +227,12 @@ extension DraftPresentationController {
     
     var presentationInset: CGFloat {
         guard hasBeenPresented && presentedViewController is DraftViewControllerProtocol else { return 0 }
-        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)
+        return openDraftsIndicatorSource.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)
     }
     
     var dismissalInset: CGFloat {
         guard shouldMinimize && presentedViewController is DraftViewControllerProtocol else { return 0 }
-        return OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)
+        return openDraftsIndicatorSource.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)
     }
 }
 

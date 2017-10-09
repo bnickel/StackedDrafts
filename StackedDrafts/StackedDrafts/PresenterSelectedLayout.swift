@@ -10,6 +10,17 @@ import UIKit
 
 class PresenterSelectedLayout: UICollectionViewLayout {
     
+    private let openDraftsIndicatorSource: OpenDraftsIndicatorSource
+    
+    public init(openDraftsIndicatorSource: OpenDraftsIndicatorSource) {
+        self.openDraftsIndicatorSource = openDraftsIndicatorSource
+        super.init()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("Not implemented")
+    }
+    
     private var allAttributes: [UICollectionViewLayoutAttributes] = []
     private var contentSize: CGSize = .zero
     
@@ -32,7 +43,7 @@ class PresenterSelectedLayout: UICollectionViewLayout {
         for i in 1 ..< count {
             let indexPath = IndexPath(item: i, section: 0)
             let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-            attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - OpenDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)), size: size)
+            attributes.frame = CGRect(origin: CGPoint(x: 0, y: size.height - openDraftsIndicatorSource.visibleHeaderHeight(numberOfOpenDrafts: OpenDraftsManager.shared.openDraftingViewControllers.count)), size: size)
             attributes.zIndex = i
             allAttributes.append(attributes)
         }

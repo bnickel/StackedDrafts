@@ -63,9 +63,9 @@ extension Notification.Name {
        - animated: Whether to animate the transition.
        - completion: An optional callback notifying when the presentation has completed.
      */
-    open func presentDraft(from presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil) {
+    open func presentDraft(from presentingViewController: UIViewController, openDraftsIndicatorSource: OpenDraftsIndicatorSource, animated: Bool, completion: (() -> Void)? = nil) {
         if self.openDraftingViewControllers.count > 1 {
-            let viewController = OpenDraftSelectorViewController()
+            let viewController = OpenDraftSelectorViewController(openDraftsIndicatorSource: openDraftsIndicatorSource)
             viewController.setRestorationIdentifier("open-drafts", contingentOnViewController: presentingViewController)
             presentingViewController.present(viewController, animated: animated, completion: completion)
         } else if let viewController = openDraftingViewControllers.last {

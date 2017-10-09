@@ -24,9 +24,11 @@ open class OpenDraftsIndicatorView: UIControl {
     @IBOutlet private var secondDraftView: UIView!
     @IBOutlet private var thirdDraftView: UIView!
     
-    private static let displayedHeight: CGFloat = 44
+    private static let naturalHeight: CGFloat = 44
     private var heightConstraint: NSLayoutConstraint!
-    private var intrinsicHeight: CGFloat = 0 { didSet { heightConstraint.constant = intrinsicHeight } }
+    private var contentHeightConstraint: NSLayoutConstraint!
+    
+    private var hasContent = false { didSet { if hasContent != oldValue { setNeedsUpdateConstraints() } } }
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,7 +55,8 @@ open class OpenDraftsIndicatorView: UIControl {
     private func loadContentView() {
         UINib(nibName: "OpenDraftsIndicatorView.contentView", bundle: Bundle(for: OpenDraftsIndicatorView.self)).instantiate(withOwner: self, options: nil)
         
-        heightConstraint = attr(self, .height) == intrinsicHeight
+        heightConstraint = attr(self, .height) == 0
+        contentHeightConstraint = attr(contentView, .height) == OpenDraftsIndicatorView.naturalHeight
         
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
@@ -61,7 +64,7 @@ open class OpenDraftsIndicatorView: UIControl {
             attr(contentView, .leading) == attr(self, .leading),
             attr(contentView, .trailing) == attr(self, .trailing),
             attr(contentView, .top) == attr(self, .top),
-            attr(contentView, .height) == OpenDraftsIndicatorView.displayedHeight,
+            contentHeightConstraint,
             heightConstraint
         ])
         
@@ -91,7 +94,7 @@ open class OpenDraftsIndicatorView: UIControl {
         secondDraftView.isHidden = numberOfOpenDrafts < 2
         thirdDraftView.isHidden = numberOfOpenDrafts < 3
         mostRecentDraftTopConstraint.constant = CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
-        intrinsicHeight = numberOfOpenDrafts > 0 ? OpenDraftsIndicatorView.displayedHeight : 0
+        hasContent = numberOfOpenDrafts > 0
         
         switch numberOfOpenDrafts {
         case 0:
@@ -111,6 +114,18 @@ open class OpenDraftsIndicatorView: UIControl {
         isAccessibilityElement = true
     }
     
+    open override func updateConstraints() {
+        super.updateConstraints()
+        
+        var contentHeight = OpenDraftsIndicatorView.naturalHeight
+        if #available(iOS 11.0, *) {
+            contentHeight += safeAreaInsets.bottom
+        }
+        
+        contentHeightConstraint.constant = contentHeight
+        heightConstraint.constant = hasContent ? contentHeight : 0
+    }
+    
     open override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         setMostRecentDraftTitle("Able was I, ere I saw Elba", numberOfOpenDrafts: 2)
@@ -120,11 +135,21 @@ open class OpenDraftsIndicatorView: UIControl {
         return self.point(inside: point, with: event) ? self : nil
     }
     
-    class func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat {
+    open func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat {
         if numberOfOpenDrafts == 0 {
             return 0
         } else {
-            return 44 - CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
+            return contentHeightConstraint.constant - CGFloat(6 + 4 * min(numberOfOpenDrafts - 1, 2))
         }
     }
+    
+    @available(iOS 11.0, *)
+    open override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        setNeedsUpdateConstraints()
+    }
+}
+
+public protocol OpenDraftsIndicatorSource: UIStateRestoring {
+    func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat
 }

@@ -11,8 +11,9 @@ import UIKit
 class OpenDraftSelectorViewController: UIViewController {
     
     fileprivate let normalLayout = AllDraftsCollectionViewLayout()
-    fileprivate let initialLayout = PresenterSelectedLayout()
+    fileprivate let initialLayout: PresenterSelectedLayout
     fileprivate let draftSelectedLayout = DraftSelectedCollectionViewLayout()
+    private let openDraftsIndicatorSource: OpenDraftsIndicatorSource
     private var selectableViewControllers: [UIViewController & DraftViewControllerProtocol] = []
     
     private var lastPanTimestamp: TimeInterval = 0
@@ -21,7 +22,9 @@ class OpenDraftSelectorViewController: UIViewController {
     
     weak var source: UIViewController?
     
-    init() {
+    public init(openDraftsIndicatorSource: OpenDraftsIndicatorSource) {
+        self.openDraftsIndicatorSource = openDraftsIndicatorSource
+        self.initialLayout = PresenterSelectedLayout(openDraftsIndicatorSource: openDraftsIndicatorSource)
         super.init(nibName: nil, bundle: nil)
         self.restorationClass = OpenDraftSelectorViewController.self
         self.transitioningDelegate = self
@@ -55,6 +58,11 @@ class OpenDraftSelectorViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never
+        }
+        
         OpenDraftCollectionViewCell.register(with: collectionView)
         selectableViewControllers = OpenDraftsManager.shared.openDraftingViewControllers
         collectionView.dataSource = self
@@ -428,7 +436,10 @@ class OpenDraftSelectorDismissalController : NSObject, UIViewControllerAnimatedT
 extension OpenDraftSelectorViewController : UIViewControllerRestoration {
     
     static func viewController(withRestorationIdentifierPath identifierComponents: [Any], coder: NSCoder) -> UIViewController? {
-        let viewController = OpenDraftSelectorViewController()
+        
+        guard let openDraftsIndicatorSource = coder.decodeObject(forKey: "openDraftsIndicatorSource") as? OpenDraftsIndicatorSource else { return nil }
+        
+        let viewController = OpenDraftSelectorViewController(openDraftsIndicatorSource: openDraftsIndicatorSource)
         viewController.restorationIdentifier = identifierComponents.last as? String
         return viewController
     }
@@ -437,6 +448,7 @@ extension OpenDraftSelectorViewController : UIViewControllerRestoration {
         super.encodeRestorableState(with: coder)
         coder.encode(source, forKey: "source")
         coder.encodeSafeArray(selectableViewControllers, forKey: "selectableViewControllers")
+        coder.encode(openDraftsIndicatorSource, forKey: "openDraftsIndicatorSource")
     }
     
     override func decodeRestorableState(with coder: NSCoder) {

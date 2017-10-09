@@ -9,7 +9,14 @@
 import UIKit
 import StackedDrafts
 
-class PresentingViewController: UIViewController {
+class PresentingViewController: UIViewController, OpenDraftsIndicatorSource {
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        DraftTransitioningDelegate.shared = DraftTransitioningDelegate(openDraftsIndicatorSource: self)
+    }
+    
+    @IBOutlet weak var openDraftsIndicatorView: OpenDraftsIndicatorView!
     
     @IBAction func done(segue: UIStoryboardSegue) { }
     
@@ -18,7 +25,14 @@ class PresentingViewController: UIViewController {
     }
     
     @IBAction func draftRequested() {
-        OpenDraftsManager.shared.presentDraft(from: self, animated: true)
+        OpenDraftsManager.shared.presentDraft(from: self, openDraftsIndicatorSource: self, animated: true)
+    }
+    
+    func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat {
+        return openDraftsIndicatorView.visibleHeaderHeight(numberOfOpenDrafts: numberOfOpenDrafts)
     }
 }
 
+extension DraftTransitioningDelegate {
+    static var shared: DraftTransitioningDelegate!
+}
