@@ -35,7 +35,7 @@ public extension Notification {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
     }
 
-    open var shouldMinimize = false
+    @objc open var shouldMinimize = false
     var interactiveTransitioning: UIPercentDrivenInteractiveTransition? = nil
     private lazy var interactiveDismissalGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panned(_:)))
     private var lastInteractionTimestamp: TimeInterval = 0

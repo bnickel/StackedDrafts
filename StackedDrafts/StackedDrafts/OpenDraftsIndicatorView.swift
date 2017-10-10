@@ -150,6 +150,6 @@ open class OpenDraftsIndicatorView: UIControl {
     }
 }
 
-public protocol OpenDraftsIndicatorSource: UIStateRestoring {
+@objc public protocol OpenDraftsIndicatorSource: UIStateRestoring {
     func visibleHeaderHeight(numberOfOpenDrafts: Int) -> CGFloat
 }
